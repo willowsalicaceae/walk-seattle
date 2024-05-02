@@ -3,7 +3,7 @@ import { Typography, Box } from '@mui/material';
 
 const Home = () => {
   return (
-    <Box>
+    <Box pb={7}>
       <Typography variant="h4" component="h1" gutterBottom>
         Welcome to WalkSeattle
       </Typography>
