@@ -7,6 +7,7 @@ const TrailList = () => {
     { id: 1, name: 'Trail 1', description: 'Description of Trail 1' },
     { id: 2, name: 'Trail 2', description: 'Description of Trail 2' },
     { id: 3, name: 'Trail 3', description: 'Description of Trail 3' },
+    { id: 4, name: 'Discovery Park', description: 'Cool trail'},
   ];
 
   return (
