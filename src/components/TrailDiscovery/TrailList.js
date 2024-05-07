@@ -1,31 +1,30 @@
 import React from 'react';
-import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@mui/material';
-import { Favorite, Share } from '@mui/icons-material';
+import { Grid } from '@mui/material';
+import TrailCard from './TrailCard';
 
 const TrailList = () => {
   const trails = [
-    { id: 1, name: 'Trail 1', description: 'Description of Trail 1' },
-    { id: 2, name: 'Trail 2', description: 'Description of Trail 2' },
-    { id: 3, name: 'Trail 3', description: 'Description of Trail 3' },
-    { id: 4, name: 'Discovery Park', description: 'Cool trail'},
+    {
+      id: 1,
+      name: 'Trail 1',
+      description: 'Description of Trail 1',
+      rating: 4.5,
+      numReviews: 10,
+      length: 3.2,
+      difficulty: 'Easy',
+      image: 'path/to/trail1-image.jpg',
+    },
+    // Add more trail objects here...
   ];
 
   return (
-    <List>
+    <Grid container spacing={2}>
       {trails.map((trail) => (
-        <ListItem key={trail.id}>
-          <ListItemText primary={trail.name} secondary={trail.description} />
-          <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="favorite">
-              <Favorite />
-            </IconButton>
-            <IconButton edge="end" aria-label="share">
-              <Share />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
+        <Grid item xs={12} sm={6} md={4} key={trail.id}>
+          <TrailCard trail={trail} />
+        </Grid>
       ))}
-    </List>
+    </Grid>
   );
 };
 
