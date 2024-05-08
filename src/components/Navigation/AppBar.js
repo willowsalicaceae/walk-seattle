@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Avatar } from '@mui/material';
+import { AppBar, Toolbar, Avatar, Button } from '@mui/material';
 import { ReactComponent as Logo } from '../../img/logo.svg';
 import { Link } from 'react-router-dom';
 import profileImage from '../../img/placeholder.png'; // Import the profile image
@@ -9,7 +9,9 @@ const AppBarComponent = () => {
     <AppBar position="static" sx={{ backgroundColor: 'white' }}>
       <Toolbar>
         <Logo style={{ height: '40px', width: 'auto', marginRight: '16px' }} />
-        <Link to="/profile" style={{ marginLeft: 'auto' }}>
+        <Button style={{ marginLeft: 'auto' }}>Login</Button>
+        <Button>Sign up</Button>
+        <Link to="/profile">
           <Avatar
             alt="User Profile"
             src={profileImage}

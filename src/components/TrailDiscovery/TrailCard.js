@@ -8,6 +8,7 @@ import {
   Button,
   Rating,
 } from '@mui/material';
+import FavoriteButton from '../FavoriteButton';
 
 const TrailCard = ({ trail }) => {
   return (
@@ -30,6 +31,7 @@ const TrailCard = ({ trail }) => {
         <Typography variant="body2" color="text.secondary">
           ({trail.numReviews} reviews)
         </Typography>
+        <FavoriteButton trailId={trail.id} />
       </CardContent>
       <CardActions>
         <Button size="small">Learn More</Button>
