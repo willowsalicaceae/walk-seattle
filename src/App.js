@@ -12,35 +12,28 @@ import ProfilePage from './pages/ProfilePage';
 import SignUp from './components/User/SignUp';
 import SignIn from './components/User/SignIn';
 import FavoritesPage from './components/User/FavoritesPage';
+import { AuthProvider } from './contexts/AuthContext';
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <Router>
-        <AppBarComponent />
-        <nav>
-          <ul>
-            <li>
-              <Link to="/signup">Sign Up</Link>
-            </li>
-            <li>
-              <Link to="/signin">Sign In</Link>
-            </li>
-          </ul>
-        </nav>
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route path="/discover" element={<TrailDiscoveryPage />} />
-          <Route path="/trail/:id" element={<TrailDetailsPage />} />
-          <Route path="/community" element={<CommunityPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-        </Routes>
-        <BottomNavigationComponent />
-      </Router>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <Router>
+          <AppBarComponent />
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route path="/discover" element={<TrailDiscoveryPage />} />
+            <Route path="/trail/:id" element={<TrailDetailsPage />} />
+            <Route path="/community" element={<CommunityPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+          </Routes>
+          <BottomNavigationComponent />
+        </Router>
+      </ThemeProvider>
+    </AuthProvider>
   );
 };
 
