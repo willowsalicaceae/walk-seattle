@@ -9,6 +9,7 @@ import TrailDiscoveryPage from './pages/TrailDiscoveryPage';
 import TrailDetailsPage from './pages/TrailDetailsPage';
 import CommunityPage from './pages/CommunityPage';
 import ProfilePage from './pages/ProfilePage';
+import TrailForm from './components/TrailForm';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/trail/:id" element={<TrailDetailsPage />} />
           <Route path="/community" element={<CommunityPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/add-trail" element={<TrailForm />} />
         </Routes>
         <BottomNavigationComponent />
       </Router>

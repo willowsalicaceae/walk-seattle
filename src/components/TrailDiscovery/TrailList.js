@@ -1,6 +1,6 @@
 // src/components/TrailDiscovery/TrailList.js
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import TrailCard from './TrailCard';
 
@@ -8,14 +8,18 @@ const TrailList = () => {
   const [trails, setTrails] = useState([]);
 
   useEffect(() => {
-    const fetchTrails = async () => {
-      const trailsCollection = collection(db, 'trails');
-      const trailsSnapshot = await getDocs(trailsCollection);
-      const trailsData = trailsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setTrails(trailsData);
+    const fetchTrails = () => {
+      const trailsRef = ref(db, 'trails');
+      onValue(trailsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const trailsData = Object.entries(data).map(([id, trail]) => ({
+            id,
+            ...trail,
+          }));
+          setTrails(trailsData);
+        }
+      });
     };
 
     fetchTrails();
