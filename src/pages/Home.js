@@ -1,17 +1,18 @@
 import React from 'react';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Container } from '@mui/material';
 
 const Home = () => {
   return (
-    <Box pb={7}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Welcome to WalkSeattle
-      </Typography>
-      <Typography variant="body1">
-        Discover urban hiking trails in Seattle and connect with fellow hikers.
-      </Typography>
-      {/* Add more content or components for the home page */}
-    </Box>
+    <Container>
+      <Box pb={7}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Welcome to WalkSeattle
+        </Typography>
+        <Typography variant="body1">
+          Discover urban hiking trails in Seattle and connect with fellow hikers.
+        </Typography>
+      </Box>
+    </Container>
   );
 };
 

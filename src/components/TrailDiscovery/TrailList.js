@@ -1,5 +1,5 @@
-// src/components/TrailDiscovery/TrailList.js
 import React, { useEffect, useState } from 'react';
+import { Grid } from '@mui/material';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import TrailCard from './TrailCard';
@@ -26,11 +26,13 @@ const TrailList = () => {
   }, []);
 
   return (
-    <div>
+    <Grid container spacing={2}>
       {trails.map((trail) => (
-        <TrailCard key={trail.id} trail={trail} />
+        <Grid item xs={12} sm={6} md={4} key={trail.id}>
+          <TrailCard trail={trail} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 };
 
