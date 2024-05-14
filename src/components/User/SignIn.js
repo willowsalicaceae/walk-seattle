@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Container, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -45,6 +46,7 @@ const SignIn = () => {
           Sign In
         </Button>
       </form>
+      <Typography variant='body1' sx={{ pt: "20px" }}>Don't have an account yet? <Link to="/signup">Sign up here</Link></Typography>
     </Container>
   );
 };
