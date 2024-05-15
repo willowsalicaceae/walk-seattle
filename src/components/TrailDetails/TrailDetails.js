@@ -1,60 +1,43 @@
+// src/components/TrailDetails/TrailDetails.js
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Typography, Box } from '@mui/material';
+import { Map, GeoJson } from 'pigeon-maps';
+import { ref, onValue } from 'firebase/database';
+import { db } from '../../firebase/firebase';
 import TrailInfo from './TrailInfo';
 import TrailReviews from './TrailReviews';
 import TransportationOptions from './TransportationOptions';
-import axios from 'axios';
 
-const TrailDetails = ({ trail }) => {
-  const [transitOptions, setTransitOptions] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
-
-  useEffect(() => {
-    const fetchTransitOptions = async () => {
-      if (!userLocation) return;
-
-      try {
-        const response = await axios.get('/otp/plan', {
-          params: {
-            fromPlace: `${userLocation.latitude},${userLocation.longitude}`,
-            toPlace: `${trail.latitude},${trail.longitude}`,
-            mode: 'TRANSIT,WALK',
-            // Add other necessary parameters
-          },
-        });
-
-        setTransitOptions(response.data);
-      } catch (error) {
-        console.error('Error fetching transit options:', error);
-      }
-    };
-
-    if (userLocation) {
-      fetchTransitOptions();
-    }
-  }, [trail, userLocation]);
+const TrailDetails = () => {
+  const { id } = useParams();
+  const [trail, setTrail] = useState(null);
+  const [geoJsonData, setGeoJsonData] = useState(null);
 
   useEffect(() => {
-    const getUserLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setUserLocation({ latitude, longitude });
-          },
-          (error) => {
-            console.error('Error getting user location:', error);
-            // Handle the case when user denies location permission or if there's an error
-          }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser.');
-        // Handle the case when the browser doesn't support geolocation
-      }
+    const fetchTrail = () => {
+      const trailRef = ref(db, `trails/${id}`);
+      onValue(trailRef, (snapshot) => {
+        const trailData = snapshot.val();
+        setTrail(trailData);
+      });
     };
 
-    getUserLocation();
-  }, []);
+    const fetchTrailTrack = () => {
+      const trackRef = ref(db, `trailTracks/${id}`);
+      onValue(trackRef, (snapshot) => {
+        const trackData = snapshot.val();
+        setGeoJsonData(trackData);
+      });
+    };
+
+    fetchTrail();
+    fetchTrailTrack();
+  }, [id]);
+
+  if (!trail) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Box>
@@ -63,7 +46,21 @@ const TrailDetails = ({ trail }) => {
       </Typography>
       <TrailInfo trail={trail} />
       <TrailReviews trail={trail} />
-      <TransportationOptions transitOptions={transitOptions} />
+      <TransportationOptions trail={trail} />
+
+      <Map center={[trail.latitude, trail.longitude]} zoom={12} width={600} height={400}>
+        {geoJsonData && (
+          <GeoJson
+            data={geoJsonData}
+            styleCallback={(feature, hover) => {
+              if (feature.geometry.type === 'LineString') {
+                return { strokeWidth: '4', stroke: '#FF0000' };
+              }
+              return {};
+            }}
+          />
+        )}
+      </Map>
     </Box>
   );
 };

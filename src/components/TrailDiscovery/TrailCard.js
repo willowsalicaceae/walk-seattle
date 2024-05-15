@@ -9,10 +9,16 @@ import {
   Rating,
 } from '@mui/material';
 import FavoriteButton from '../FavoriteButton';
+import { Link as RouterLink } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+
+const Link = styled(RouterLink)({
+  textDecoration: 'none',
+});
 
 const TrailCard = ({ trail }) => {
   return (
-    <Card>
+    <Card component={Link} to={`/trail/${trail.id}`}>
       <CardMedia component="img" height="140" image={trail.image} alt={trail.name} />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
