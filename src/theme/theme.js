@@ -10,6 +10,12 @@ const theme = createTheme({
       main: '#f50057',
     },
   },
+  typography: {
+    fontFamily: '"Montserrat", "Helvetica", "Arial", sans-serif',
+    h5: {
+      fontWeight: 500,
+    },
+  },
 });
 
 export default theme;
