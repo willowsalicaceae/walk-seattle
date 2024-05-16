@@ -1,13 +1,33 @@
-import React from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { ref, onValue } from 'firebase/database';
+import { db } from '../firebase/firebase';
+import { useState, useEffect } from 'react';
 import { Typography, Container } from '@mui/material';
+import ProfileSettings from '../components/User/ProfileSettings';
 
 const ProfilePage = () => {
+  const { currentUser } = useAuth();
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    if (currentUser) {
+      const userRef = ref(db, `users/${currentUser.uid}`);
+      onValue(userRef, (snapshot) => {
+        const userData = snapshot.val();
+        if (userData) {
+          setUsername(userData.username);
+        }
+      });
+    }
+  }, [currentUser]);
+
   return (
-    <Container>
+    <Container sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         User Profile
       </Typography>
-      {/* Add components for user profile */}
+      <Typography variant="h6">Username: {username}</Typography>
+      <ProfileSettings />
     </Container>
   );
 };

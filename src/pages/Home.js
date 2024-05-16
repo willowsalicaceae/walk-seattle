@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
-      <Container>
+      <Container sx={{ mt: 4, mb: 4 }}>
         <Box pb={7}>
           <Typography variant="h4" component="h1" gutterBottom>
             Welcome to WalkSeattle

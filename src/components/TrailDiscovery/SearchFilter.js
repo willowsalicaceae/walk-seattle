@@ -1,32 +1,36 @@
 import React from 'react';
-import { TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 
-const SearchFilter = () => {
-  const [difficulty, setDifficulty] = React.useState('');
+const SearchFilter = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) => {
+  const handleSortChange = (event) => {
+    onSortChange(event.target.value);
+  };
 
-  const handleChange = (event) => {
-    setDifficulty(event.target.value);
+  const handleSortOrderChange = (event) => {
+    onSortOrderChange(event.target.value);
   };
 
   return (
-    <div>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <TextField label="Search Trails" variant="outlined" />
-      <FormControl variant="outlined">
-        <InputLabel id="difficulty-label">Difficulty</InputLabel>
-        <Select
-          labelId="difficulty-label"
-          id="difficulty-select"
-          value={difficulty}
-          onChange={handleChange}
-          label="Difficulty"
-        >
-          <MenuItem value="">All</MenuItem>
-          <MenuItem value="easy">Easy</MenuItem>
-          <MenuItem value="moderate">Moderate</MenuItem>
-          <MenuItem value="difficult">Difficult</MenuItem>
+      <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+        <InputLabel>Sort By</InputLabel>
+        <Select value={sortBy} onChange={handleSortChange} label="Sort By">
+          <MenuItem value="">None</MenuItem>
+          <MenuItem value="numReviews">Number of Reviews</MenuItem>
+          <MenuItem value="rating">Rating</MenuItem>
+          <MenuItem value="difficulty">Difficulty</MenuItem>
+          <MenuItem value="length">Length</MenuItem>
         </Select>
       </FormControl>
-    </div>
+      <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+        <InputLabel>Sort Order</InputLabel>
+        <Select value={sortOrder} onChange={handleSortOrderChange} label="Sort Order">
+        <MenuItem value="desc">High to Low</MenuItem>
+          <MenuItem value="asc">Low to High</MenuItem>
+        </Select>
+      </FormControl>
+    </Box>
   );
 };
 

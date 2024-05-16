@@ -4,7 +4,7 @@ import TrailDetails from '../components/TrailDetails/TrailDetails';
 
 const TrailDetailsPage = ({ trail }) => {
   return (
-    <Container>
+    <Container sx={{ mt: 4, mb: 4 }}>
       <TrailDetails trail={trail} />
     </Container>
   );
