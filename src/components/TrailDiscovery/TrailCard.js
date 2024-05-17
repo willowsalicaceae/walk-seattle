@@ -12,12 +12,28 @@ import {
 import FavoriteButton from '../FavoriteButton';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import { calculateDistance } from '../../utils/distance';
 
 const Link = styled(RouterLink)({
   textDecoration: 'none',
 });
 
-const TrailCard = ({ trail }) => {
+const TrailCard = ({ trail, userLocation }) => {
+  const difficultyColor = {
+    easy: 'success',
+    moderate: 'info',
+    hard: 'warning',
+  };
+
+  const distance = userLocation
+    ? calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        trail.latitude,
+        trail.longitude
+      ).toFixed(1)
+    : null;
+
   return (
     <Card>
       <CardActionArea component={Link} to={`/trail/${trail.id}`}>
@@ -39,9 +55,17 @@ const TrailCard = ({ trail }) => {
             <Typography variant="body2" color="text.secondary" ml={1}>
               ({trail.numReviews} reviews)
             </Typography>
-            <Chip label={trail.difficulty} color="primary" size="small" />
-
+            <Chip
+              label={trail.difficulty}
+              color={difficultyColor[trail.difficulty.toLowerCase()]}
+              size="small"
+            />
           </Box>
+          {distance && (
+          <Typography variant="body2" color="text.secondary" mt={1}>
+            Distance: {distance} miles
+          </Typography>
+        )}
         </CardContent>
       </CardActionArea>
     </Card>

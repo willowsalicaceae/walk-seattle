@@ -21,12 +21,13 @@ const SearchFilter = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) =>
           <MenuItem value="rating">Rating</MenuItem>
           <MenuItem value="difficulty">Difficulty</MenuItem>
           <MenuItem value="length">Length</MenuItem>
+          <MenuItem value="distance">Distance</MenuItem>
         </Select>
       </FormControl>
       <FormControl variant="outlined" sx={{ minWidth: 120 }}>
         <InputLabel>Sort Order</InputLabel>
         <Select value={sortOrder} onChange={handleSortOrderChange} label="Sort Order">
-        <MenuItem value="desc">High to Low</MenuItem>
+          <MenuItem value="desc">High to Low</MenuItem>
           <MenuItem value="asc">Low to High</MenuItem>
         </Select>
       </FormControl>

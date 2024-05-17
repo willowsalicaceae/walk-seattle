@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Skeleton, Typography } from '@mui/material';
+import { Grid, Skeleton } from '@mui/material';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import TrailCard from './TrailCard';
@@ -21,7 +21,7 @@ const deg2rad = (deg) => {
   return deg * (Math.PI / 180);
 };
 
-const TrailList = ({ sortBy, sortOrder }) => {
+const TrailList = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) => {
   const [trails, setTrails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
@@ -31,11 +31,16 @@ const TrailList = ({ sortBy, sortOrder }) => {
       try {
         const cachedLocation = localStorage.getItem('userLocation');
         if (cachedLocation) {
-          setUserLocation(JSON.parse(cachedLocation));
+          const location = JSON.parse(cachedLocation);
+          setUserLocation(location);
+          onSortChange('distance');
+          onSortOrderChange('asc');
         } else {
           const location = await getUserLocation();
           setUserLocation(location);
           localStorage.setItem('userLocation', JSON.stringify(location));
+          onSortChange('distance');
+          onSortOrderChange('asc');
         }
       } catch (error) {
         console.error('Error fetching user location:', error);
@@ -43,7 +48,7 @@ const TrailList = ({ sortBy, sortOrder }) => {
     };
 
     fetchUserLocation();
-  }, []);
+  }, [onSortChange, onSortOrderChange]);
 
   useEffect(() => {
     const fetchTrails = () => {
@@ -74,16 +79,32 @@ const TrailList = ({ sortBy, sortOrder }) => {
   const sortTrails = (a, b) => {
     const multiplier = sortOrder === 'asc' ? 1 : -1;
 
-    if (sortBy === 'numReviews') {
+    if (sortBy === 'distance' && userLocation) {
+      const distanceA = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        a.latitude,
+        a.longitude
+      );
+      const distanceB = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        b.latitude,
+        b.longitude
+      );
+      return multiplier * (distanceA - distanceB);
+    } else if (sortBy === 'numReviews') {
       return multiplier * (a.numReviews - b.numReviews);
     } else if (sortBy === 'rating') {
       return multiplier * (a.rating - b.rating);
     } else if (sortBy === 'difficulty') {
-      return multiplier * a.difficulty.localeCompare(b.difficulty);
+      const difficultyOrder = ['Easy', 'Moderate', 'Hard'];
+      return multiplier * (difficultyOrder.indexOf(a.difficulty) - difficultyOrder.indexOf(b.difficulty));
     } else if (sortBy === 'length') {
       return multiplier * (a.length - b.length);
     }
-    return 0;
+    // Default sorting by number of reviews (high to low)
+    return b.numReviews - a.numReviews;
   };
 
   const sortedTrails = trails.sort(sortTrails);
@@ -101,12 +122,7 @@ const TrailList = ({ sortBy, sortOrder }) => {
       ) : (
         sortedTrails.map((trail) => (
           <Grid item xs={12} sm={6} md={4} key={trail.id}>
-            <TrailCard trail={trail} />
-            {userLocation && (
-              <Typography variant="body2" color="text.secondary" mt={1}>
-                Distance: {calculateDistance(userLocation.latitude, userLocation.longitude, trail.latitude, trail.longitude).toFixed(1)} miles
-              </Typography>
-            )}
+            <TrailCard trail={trail} userLocation={userLocation} />
           </Grid>
         ))
       )}
