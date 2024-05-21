@@ -24,6 +24,20 @@ const SignUp = () => {
     }
 
     try {
+      // Check if the username is already taken
+      const usersRef = ref(db, 'users');
+      const snapshot = await get(usersRef);
+      const users = snapshot.val();
+
+      const existingUser = Object.values(users).find(
+        (user) => user.username === username
+      );
+
+      if (existingUser) {
+        setUsernameError('Username is already taken');
+        return;
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const { user } = userCredential;
       const userId = uuidv4(); // Generate a unique user ID
@@ -42,7 +56,7 @@ const SignUp = () => {
 
   return (
     <>
-       {error && <Alert severity="error">{error}</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
       <Container maxWidth="xs">
         <Typography variant="h4" align="center" gutterBottom>
           Sign Up
