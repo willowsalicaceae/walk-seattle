@@ -5,6 +5,7 @@ import { auth, db } from '../../firebase/firebase';
 import { ref, set, get } from 'firebase/database';
 import { Alert, TextField, Button, Container, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -23,19 +24,12 @@ const SignUp = () => {
     }
 
     try {
-      const usernamesRef = ref(db, 'usernames');
-      const snapshot = await get(usernamesRef);
-      const usernames = snapshot.val();
-
-      if (usernames && usernames[username]) {
-        setUsernameError('Username is already taken');
-        return;
-      }
-
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const { user } = userCredential;
+      const userId = uuidv4(); // Generate a unique user ID
 
-      await set(ref(db, `users/${user.uid}`), {
+      // Store user data with the userID as the key
+      await set(ref(db, `users/${userId}`), {
         username,
         email: user.email,
       });

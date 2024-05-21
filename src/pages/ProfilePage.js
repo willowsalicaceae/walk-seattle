@@ -7,7 +7,7 @@ import ProfileSettings from '../components/User/ProfileSettings';
 
 const ProfilePage = () => {
   const { currentUser } = useAuth();
-  const [username, setUsername] = useState('');
+  const [userInfo, setUserInfo] = useState({ username: '' });
 
   useEffect(() => {
     if (currentUser) {
@@ -15,7 +15,7 @@ const ProfilePage = () => {
       onValue(userRef, (snapshot) => {
         const userData = snapshot.val();
         if (userData) {
-          setUsername(userData.username);
+          setUserInfo(userData);
         }
       });
     }
@@ -26,7 +26,7 @@ const ProfilePage = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         User Profile
       </Typography>
-      <Typography variant="h6">Username: {username}</Typography>
+      <Typography variant="h6">Username: {userInfo.username}</Typography>
       <ProfileSettings />
     </Container>
   );

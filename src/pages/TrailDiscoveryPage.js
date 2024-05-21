@@ -4,8 +4,9 @@ import TrailList from '../components/TrailDiscovery/TrailList';
 import SearchFilter from '../components/TrailDiscovery/SearchFilter';
 
 const TrailDiscoveryPage = () => {
-  const [sortBy, setSortBy] = useState('numReviews');
+  const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSortChange = (value) => {
     setSortBy(value);
@@ -15,6 +16,10 @@ const TrailDiscoveryPage = () => {
     setSortOrder(value);
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
       <SearchFilter
@@ -22,10 +27,12 @@ const TrailDiscoveryPage = () => {
         sortOrder={sortOrder}
         onSortChange={handleSortChange}
         onSortOrderChange={handleSortOrderChange}
+        onSearch={handleSearch}
       />
       <TrailList
         sortBy={sortBy}
         sortOrder={sortOrder}
+        searchQuery={searchQuery}
         onSortChange={handleSortChange}
         onSortOrderChange={handleSortOrderChange}
       />

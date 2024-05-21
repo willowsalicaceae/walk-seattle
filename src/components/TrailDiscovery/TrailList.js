@@ -4,24 +4,9 @@ import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import TrailCard from './TrailCard';
 import getUserLocation from '../../utils/location';
+import { calculateDistance } from '../../utils/distance';
 
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(lat2 - lat1);
-  const dLon = deg2rad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c; // Distance in km
-  return d * 0.621371; // Convert to miles
-};
-
-const deg2rad = (deg) => {
-  return deg * (Math.PI / 180);
-};
-
-const TrailList = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) => {
+const TrailList = ({ sortBy, sortOrder, searchQuery, onSortChange, onSortOrderChange }) => {
   const [trails, setTrails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
@@ -33,14 +18,18 @@ const TrailList = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) => {
         if (cachedLocation) {
           const location = JSON.parse(cachedLocation);
           setUserLocation(location);
-          onSortChange('distance');
-          onSortOrderChange('asc');
+          if (sortBy === '') {
+            onSortChange('distance');
+            onSortOrderChange('asc');
+          }
         } else {
           const location = await getUserLocation();
           setUserLocation(location);
           localStorage.setItem('userLocation', JSON.stringify(location));
-          onSortChange('distance');
-          onSortOrderChange('asc');
+          if (sortBy === '') {
+            onSortChange('distance');
+            onSortOrderChange('asc');
+          }
         }
       } catch (error) {
         console.error('Error fetching user location:', error);
@@ -48,7 +37,7 @@ const TrailList = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) => {
     };
 
     fetchUserLocation();
-  }, [onSortChange, onSortOrderChange]);
+  }, [onSortChange, onSortOrderChange, sortBy]);
 
   useEffect(() => {
     const fetchTrails = () => {
@@ -107,7 +96,11 @@ const TrailList = ({ sortBy, sortOrder, onSortChange, onSortOrderChange }) => {
     return b.numReviews - a.numReviews;
   };
 
-  const sortedTrails = trails.sort(sortTrails);
+  const filteredTrails = trails.filter((trail) =>
+    trail.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedTrails = filteredTrails.sort(sortTrails);
 
   return (
     <Grid container spacing={2} sx={{ mt: 1 }}>

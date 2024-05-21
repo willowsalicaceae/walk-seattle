@@ -11,7 +11,7 @@ import CommunityPage from './pages/CommunityPage';
 import ProfilePage from './pages/ProfilePage';
 import SignUp from './components/User/SignUp';
 import SignIn from './components/User/SignIn';
-import FavoritesPage from './components/User/FavoritesPage';
+import FavoritesPage from './pages/FavoritesPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 const App = () => {

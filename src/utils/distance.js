@@ -7,8 +7,6 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const d = R * c; // Distance in km
-  console.log(lat1, lon1, lat2, lon2);
-  console.log(d * 0.621371);
   return d * 0.621371; // Convert to miles
 };
 

@@ -8,6 +8,7 @@ import {
   Rating,
   Chip,
   Box,
+  CardActions
 } from '@mui/material';
 import FavoriteButton from '../FavoriteButton';
 import { Link as RouterLink } from 'react-router-dom';
@@ -43,7 +44,6 @@ const TrailCard = ({ trail, userLocation }) => {
             <Typography gutterBottom variant="h5" component="div">
               {trail.name}
             </Typography>
-            <FavoriteButton trailId={trail.id} />
           </Box>
           <Box display="flex" alignItems="center" mb={1}>
             <Typography variant="body2" color="text.secondary">
@@ -68,6 +68,9 @@ const TrailCard = ({ trail, userLocation }) => {
         )}
         </CardContent>
       </CardActionArea>
+      <CardActions>
+        <FavoriteButton trailId={trail.id} />
+      </CardActions>
     </Card>
   );
 };

@@ -18,12 +18,16 @@ const ProfileSettings = () => {
     }
 
     try {
-      // Check if the new username already exists
-      const usernamesRef = ref(db, 'usernames');
-      const snapshot = await get(usernamesRef);
-      const usernames = snapshot.val();
+      // Check if the new username is already taken by another user
+      const usersRef = ref(db, 'users');
+      const snapshot = await get(usersRef);
+      const users = snapshot.val();
 
-      if (usernames && usernames[newUsername]) {
+      const existingUser = Object.values(users).find(
+        (user) => user.username === newUsername && user.email !== currentUser.email
+      );
+
+      if (existingUser) {
         setUsernameError('Username is already taken');
         return;
       }
@@ -33,13 +37,8 @@ const ProfileSettings = () => {
         username: newUsername,
       });
 
-      // Update the 'usernames' node
-      await update(ref(db, `usernames`), {
-        [newUsername]: currentUser.uid,
-        [currentUser.displayName]: null,
-      });
-
       // Show success message or redirect to profile page
+      setUsernameError('');
     } catch (error) {
       console.error('Error updating username:', error);
     }
@@ -51,6 +50,8 @@ const ProfileSettings = () => {
         label="New Username"
         value={newUsername}
         onChange={(e) => setNewUsername(e.target.value)}
+        error={!!usernameError}
+        helperText={usernameError}
       />
       <Button type="submit" variant="contained">
         Change Username

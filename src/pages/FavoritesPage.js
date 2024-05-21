@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Container, Typography } from '@mui/material';
-
 import { ref, onValue, get } from 'firebase/database';
-import { db, auth } from '../../firebase/firebase';
-import TrailCard from '../../components/TrailDiscovery/TrailCard';
+import { db, auth } from '../firebase/firebase';
+import TrailCard from '../components/TrailDiscovery/TrailCard';
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState([]);
@@ -35,8 +34,8 @@ const FavoritesPage = () => {
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom>
-          Favorite Trails
-        </Typography>
+        Favorite Trails
+      </Typography>
       <Grid container spacing={2}>
         {favorites.map((trail) => (
           <Grid item xs={12} sm={6} md={4} key={trail.id}>
