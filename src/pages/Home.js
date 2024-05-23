@@ -1,12 +1,12 @@
+// src/pages/Home.js
+
 import { useEffect, useState } from 'react';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { Alert, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton } from '@mui/material';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
-import { ref, onValue } from 'firebase/database';
-import { db } from '../firebase/firebase';
 import getUserLocation from '../utils/location';
-import { calculateDistance } from '../utils/distance';
+import { fetchTrailsData, fetchCommunityPostsData, sortTrailsData } from '../utils/dataUtils';
 
 const Home = () => {
   const location = useLocation();
@@ -15,90 +15,47 @@ const Home = () => {
   const [topRatedTrails, setTopRatedTrails] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      const cachedLocation = localStorage.getItem('userLocation');
-      let userLocation;
+      if (isMounted) {
+        const cachedLocation = localStorage.getItem('userLocation');
+        let userLocation;
 
-      if (cachedLocation) {
-        userLocation = JSON.parse(cachedLocation);
-      } else {
-        userLocation = await getUserLocation();
-        localStorage.setItem('userLocation', JSON.stringify(userLocation));
-      }
+        if (cachedLocation) {
+          userLocation = JSON.parse(cachedLocation);
+        } else {
+          userLocation = await getUserLocation();
+          localStorage.setItem('userLocation', JSON.stringify(userLocation));
+        }
 
-      const cachedTrails = localStorage.getItem('trails');
-      let trails;
+        const trails = await fetchTrailsData(userLocation);
+        const posts = await fetchCommunityPostsData();
 
-      if (cachedTrails) {
-        trails = JSON.parse(cachedTrails);
-      } else {
-        const trailsRef = ref(db, 'trails');
-        const snapshot = await onValue(trailsRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            trails = Object.entries(data).map(([id, trail]) => ({
-              id,
-              ...trail,
-            }));
-            localStorage.setItem('trails', JSON.stringify(trails));
-          }
-        });
-      }
-
-      if (trails) {
-        const trailsWithDistance = trails.map((trail) => ({
-          ...trail,
-          distance: calculateDistance(
-            userLocation.latitude,
-            userLocation.longitude,
-            trail.latitude,
-            trail.longitude
-          ),
-        }));
-
-        localStorage.setItem('trails', JSON.stringify(trailsWithDistance));
-
-        const sortedByDistance = [...trailsWithDistance].sort((a, b) => a.distance - b.distance);
-        const sortedByPopularity = [...trailsWithDistance].sort((a, b) => b.numReviews - a.numReviews);
-        const sortedByRating = [...trailsWithDistance].sort((a, b) => b.rating - a.rating);
+        const sortedByDistance = sortTrailsData(trails, 'distance', 'asc');
+        const sortedByPopularity = sortTrailsData(trails, 'numReviews', 'desc');
+        const sortedByRating = sortTrailsData(trails, 'rating', 'desc');
 
         setNearbyTrails(sortedByDistance.slice(0, 4));
         setPopularTrails(sortedByPopularity.slice(0, 4));
         setTopRatedTrails(sortedByRating.slice(0, 4));
-      }
 
-      const cachedEvents = localStorage.getItem('communityPosts');
-      let events;
-
-      if (cachedEvents) {
-        events = JSON.parse(cachedEvents);
-      } else {
-        const eventsRef = ref(db, 'communityPosts');
-        const snapshot = await onValue(eventsRef, (snapshot) => {
-          const data = snapshot.val();
-          if (data) {
-            events = Object.entries(data).map(([id, post]) => ({
-              id,
-              ...post,
-            }));
-            localStorage.setItem('communityPosts', JSON.stringify(events));
-          }
-        });
-      }
-
-      if (events) {
-        const filteredEvents = events.filter((post) => post.type === 'event' && new Date(post.date) > new Date());
+        const filteredEvents = posts.filter((post) => post.type === 'event' && new Date(post.date) > new Date());
         const sortedByDate = filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
         setUpcomingEvents(sortedByDate.slice(0, 4));
-      }
 
-      setLoading(false);
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [isMounted]);
 
   return (
     <>

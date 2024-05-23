@@ -1,20 +1,46 @@
+// src/pages/TrailDiscoveryPage.js
+
 import React, { useState, useEffect } from 'react';
 import { Container } from '@mui/material';
 import TrailList from '../components/TrailDiscovery/TrailList';
 import SearchFilter from '../components/TrailDiscovery/SearchFilter';
-import { useLocation } from 'react-router-dom';
+import { fetchTrailsData } from '../utils/dataUtils';
+import getUserLocation from '../utils/location';
 
 const TrailDiscoveryPage = () => {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') || '');
-  const [sortOrder, setSortOrder] = useState(searchParams.get('order') || 'desc');
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [searchQuery, setSearchQuery] = useState('');
+  const [trails, setTrails] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setSortBy(searchParams.get('sort') || '');
-    setSortOrder(searchParams.get('order') || 'desc');
-  }, [location.search]);
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isMounted) {
+        const cachedLocation = localStorage.getItem('userLocation');
+        let location;
+
+        if (cachedLocation) {
+          location = JSON.parse(cachedLocation);
+        } else {
+          location = await getUserLocation();
+          localStorage.setItem('userLocation', JSON.stringify(location));
+        }
+
+        const trailsData = await fetchTrailsData(location);
+        setTrails(trailsData);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isMounted]);
 
   const handleSortChange = (value) => {
     setSortBy(value);
@@ -38,11 +64,11 @@ const TrailDiscoveryPage = () => {
         onSearch={handleSearch}
       />
       <TrailList
+        trails={trails}
+        loading={loading}
         sortBy={sortBy}
         sortOrder={sortOrder}
         searchQuery={searchQuery}
-        onSortChange={handleSortChange}
-        onSortOrderChange={handleSortOrderChange}
       />
     </Container>
   );
