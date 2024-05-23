@@ -1,7 +1,7 @@
 // src/components/TrailDetails/TrailDetails.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Container, Card, CardMedia, CardContent, Rating, Chip } from '@mui/material';
 import { Map, GeoJson } from 'pigeon-maps';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
@@ -66,32 +66,71 @@ const TrailDetails = () => {
   }
 
   return (
-    <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
-        {trail.name}
-      </Typography>
-      <TrailInfo trail={trail} />
-      <TrailReviews trail={trail} />
-      <TransportationOptions trail={trail} />
+    <Container>
+      <Card>
+        <CardMedia
+          component="img"
+          height="300"
+          image={trail.image}
+          alt={trail.name}
+        />
+        <CardContent>
+        <Typography variant="h5">{trail.name}</Typography>
+          <Box display="flex" alignItems="center" mb={1}>
+            <Typography variant="body2" color="text.secondary">
+              {trail.length} miles
+            </Typography>
+          </Box>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Rating value={trail.rating} precision={0.5} readOnly />
+            <Typography variant="body2" color="text.secondary" ml={1}>
+              ({trail.numReviews} reviews)
+            </Typography>
+            <Chip
+              label={trail.difficulty}
+              color={getDifficultyColor(trail.difficulty)}
+              size="small"
+            />
+          </Box>
+          <TrailInfo trail={trail} />
+          <TrailReviews trail={trail} />
+          <TransportationOptions trail={trail} />
+        </CardContent>
+      </Card>
 
-      <Map center={centroid} zoom={15} width={600} height={400}>
-        {geoJsonData && (
-          <GeoJson
-            data={geoJsonData}
-            styleCallback={(feature, hover) => {
-              if (feature.geometry.type === 'LineString') {
-                return { strokeWidth: '40', stroke: '#FF0000' };
-              }
-              return {
-                strokeWidth: "5",
-                stroke: "red",
-              };
-            }}
-          />
-        )}
-      </Map>
-    </Box>
+      <Box mt={4}>
+        <Map center={centroid} zoom={15} width="100%" height={400}>
+          {geoJsonData && (
+            <GeoJson
+              data={geoJsonData}
+              styleCallback={(feature, hover) => {
+                if (feature.geometry.type === 'LineString') {
+                  return { strokeWidth: '40', stroke: '#FF0000' };
+                }
+                return {
+                  strokeWidth: "5",
+                  stroke: "red",
+                };
+              }}
+            />
+          )}
+        </Map>
+      </Box>
+    </Container>
   );
+};
+
+const getDifficultyColor = (difficulty) => {
+  switch (difficulty.toLowerCase()) {
+    case 'easy':
+      return 'success';
+    case 'moderate':
+      return 'info';
+    case 'hard':
+      return 'warning';
+    default:
+      return 'default';
+  }
 };
 
 export default TrailDetails;
