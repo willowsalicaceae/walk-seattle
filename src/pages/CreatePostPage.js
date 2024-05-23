@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, TextField, Switch, FormControlLabel, Button, Autocomplete } from '@mui/material';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { Container, Typography, TextField, Switch, FormControlLabel, Button, Grid } from '@mui/material';import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { ref, push } from 'firebase/database';
 import { db } from '../firebase/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { Autocomplete } from '@mui/material';
 
 const CreatePostPage = () => {
   const { currentUser } = useAuth();
@@ -102,20 +102,26 @@ const CreatePostPage = () => {
               onChange={(event, newValue) => setSelectedTrail(newValue)}
               renderInput={(params) => <TextField {...params} label="Select Trail" margin="normal" />}
             />
-            <DatePicker
-              label="Event Date"
-              value={eventDate}
-              onChange={(newValue) => setEventDate(newValue)}
-              renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-              required
-            />
-            <TimePicker
-              label="Event Time"
-              value={eventTime}
-              onChange={(newValue) => setEventTime(newValue)}
-              renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-              required
-            />
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <DatePicker
+                  label="Event Date"
+                  value={eventDate}
+                  onChange={(newValue) => setEventDate(newValue)}
+                  renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TimePicker
+                  label="Event Time"
+                  value={eventTime}
+                  onChange={(newValue) => setEventTime(newValue)}
+                  renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
+                  required
+                />
+              </Grid>
+            </Grid>
           </>
         )}
         <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>

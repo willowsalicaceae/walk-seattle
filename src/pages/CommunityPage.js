@@ -1,9 +1,10 @@
 // src/pages/CommunityPage.js
 import React, { useEffect, useState } from 'react';
-import { Typography, Container, Grid } from '@mui/material';
+import { Typography, Container, Grid, Button } from '@mui/material';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../firebase/firebase';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
+import { Link as RouterLink } from 'react-router-dom';
 
 const CommunityPage = () => {
   const [posts, setPosts] = useState([]);
@@ -26,15 +27,22 @@ const CommunityPage = () => {
     fetchPosts();
   }, []);
 
+  const handleDeletePost = (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  };
+
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Community
       </Typography>
+      <Button component={RouterLink} to="/community/create-post" variant="contained" sx={{ mb: 2 }}>
+        Create New Post
+      </Button>
       <Grid container spacing={2}>
         {posts.map((post) => (
           <Grid item xs={12} sm={6} md={4} key={post.id}>
-            <CommunityPostCard post={post} />
+            <CommunityPostCard post={post} onDeletePost={handleDeletePost} />
           </Grid>
         ))}
       </Grid>
