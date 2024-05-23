@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link as RouterLink } from 'react-router-dom';
-import { Container, Typography, Card, CardContent, CardMedia, List, ListItem, ListItemText, Button } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { Container, Typography, Card, CardContent, CardMedia, List, ListItem, ListItemText } from '@mui/material';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import RSVPButton from './RSVPButton';
@@ -64,23 +64,15 @@ const PostDetailsPage = () => {
   return (
     <Container maxWidth="sm">
       <Card>
-        {trail && (
-          <>
+        <CardContent>
+          {trail && (
             <CardMedia
-              component={RouterLink}
-              to={`/trail/${trail.id}`}
+              component="img"
               height="200"
               image={trail.image}
               alt={trail.name}
             />
-            <CardContent>
-              <Typography variant="h6" component={RouterLink} to={`/trail/${trail.id}`}>
-                {trail.name}
-              </Typography>
-            </CardContent>
-          </>
-        )}
-        <CardContent>
+          )}
           <Typography variant="h5" component="div">
             {post.title}
           </Typography>

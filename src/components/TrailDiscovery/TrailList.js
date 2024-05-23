@@ -43,7 +43,8 @@ const TrailList = ({ sortBy, sortOrder, searchQuery, onSortChange, onSortOrderCh
     const fetchTrails = () => {
       const cachedTrails = localStorage.getItem('trails');
       if (cachedTrails) {
-        setTrails(JSON.parse(cachedTrails));
+        const parsedTrails = JSON.parse(cachedTrails);
+        setTrails(parsedTrails);
         setLoading(false);
       } else {
         const trailsRef = ref(db, 'trails');
@@ -64,6 +65,15 @@ const TrailList = ({ sortBy, sortOrder, searchQuery, onSortChange, onSortOrderCh
 
     fetchTrails();
   }, []);
+
+  useEffect(() => {
+    if (sortBy) {
+      onSortChange(sortBy);
+    }
+    if (sortOrder) {
+      onSortOrderChange(sortOrder);
+    }
+  }, [sortBy, sortOrder, onSortChange, onSortOrderChange]);
 
   const sortTrails = (a, b) => {
     const multiplier = sortOrder === 'asc' ? 1 : -1;
