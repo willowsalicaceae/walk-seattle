@@ -60,6 +60,11 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
             <Typography variant="body2" color="text.secondary">
               {post.description}
             </Typography>
+            {post.type === 'event' && post.date && (
+              <Typography variant="body2" color="text.secondary">
+                Date: {new Date(post.date).toLocaleDateString()}
+              </Typography>
+            )}
             {user && (
               <Typography variant="body2" color="text.secondary">
                 Posted by: {user.username}

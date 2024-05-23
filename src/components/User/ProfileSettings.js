@@ -24,7 +24,7 @@ const ProfileSettings = () => {
       const users = snapshot.val();
 
       const existingUser = Object.values(users).find(
-        (user) => user.username === newUsername && user.email !== currentUser.email
+        (user) => user.username === newUsername && user.uid !== currentUser.uid
       );
 
       if (existingUser) {
@@ -32,7 +32,7 @@ const ProfileSettings = () => {
         return;
       }
 
-      // Update the username in the 'users' node
+      // Update the username in the 'users' node using the UID
       await update(ref(db, `users/${currentUser.uid}`), {
         username: newUsername,
       });

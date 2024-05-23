@@ -40,12 +40,10 @@ const SignUp = () => {
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const { user } = userCredential;
-      const userId = uuidv4(); // Generate a unique user ID
 
-      // Store user data with the userID as the key
-      await set(ref(db, `users/${userId}`), {
+      // Store user data using the UID as the key
+      await set(ref(db, `users/${user.uid}`), {
         username,
-        email: user.email,
       });
 
       navigate('/', { state: { alert: 'Sign up successful! You are now logged in.' } });
