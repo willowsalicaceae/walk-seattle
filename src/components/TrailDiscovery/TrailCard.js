@@ -36,36 +36,47 @@ const TrailCard = ({ trail, userLocation }) => {
     : null;
 
   return (
-    <Card>
-      <CardActionArea component={Link} to={`/trail/${trail.id}`}>
-        <CardMedia component="img" height="200" image={trail.image} alt={trail.name} />
-        <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography gutterBottom variant="h5" component="div">
-              {trail.name}
-            </Typography>
-          </Box>
-          <Box display="flex" alignItems="center" mb={1}>
-            <Typography variant="body2" color="text.secondary">
-              {trail.length} miles
-            </Typography>
-          </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Rating value={trail.rating} precision={0.5} readOnly />
-            <Typography variant="body2" color="text.secondary" ml={1}>
-              ({trail.numReviews} reviews)
-            </Typography>
-            <Chip
-              label={trail.difficulty}
-              color={difficultyColor[trail.difficulty.toLowerCase()]}
-              size="small"
-            />
-          </Box>
-          {distance && (
-          <Typography variant="body2" color="text.secondary" mt={1}>
-            Distance: {distance} miles
+    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <CardActionArea component={Link} to={`/trail/${trail.id}`} sx={{ flexGrow: 1 }}>
+        <CardMedia
+          component="img"
+          height="200"
+          image={trail.image}
+          alt={trail.name}
+        />
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="div"
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: '2',
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
+            {trail.name}
           </Typography>
-        )}
+          <Box>
+            <Box display="flex" alignItems="center" mb={1}>
+              <Typography variant="body2" color="text.secondary">
+                {trail.length} miles
+              </Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Rating value={trail.rating} precision={0.5} readOnly />
+              <Typography variant="body2" color="text.secondary" ml={1}>
+                ({trail.numReviews} reviews)
+              </Typography>
+              <Chip
+                label={trail.difficulty}
+                color={difficultyColor[trail.difficulty.toLowerCase()]}
+                size="small"
+              />
+            </Box>
+          </Box>
         </CardContent>
       </CardActionArea>
       <CardActions>

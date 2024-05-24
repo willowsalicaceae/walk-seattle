@@ -42,13 +42,13 @@ const Home = () => {
         const sortedByPopularity = sortTrailsData(trails, 'numReviews', 'desc');
         const sortedByRating = sortTrailsData(trails, 'rating', 'desc');
 
-        setNearbyTrails(sortedByDistance.slice(0, 4));
-        setPopularTrails(sortedByPopularity.slice(0, 4));
-        setTopRatedTrails(sortedByRating.slice(0, 4));
+        setNearbyTrails(sortedByDistance.slice(0, 10));
+        setPopularTrails(sortedByPopularity.slice(0, 10));
+        setTopRatedTrails(sortedByRating.slice(0, 10));
 
         const filteredEvents = posts.filter((post) => post.type === 'event' && new Date(post.date) > new Date());
         const sortedByDate = filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-        setUpcomingEvents(sortedByDate.slice(0, 4));
+        setUpcomingEvents(sortedByDate.slice(0, 10));
 
         setLoading(false);
       }
