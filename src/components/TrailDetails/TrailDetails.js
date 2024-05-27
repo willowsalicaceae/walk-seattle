@@ -1,4 +1,3 @@
-// src/components/TrailDetails/TrailDetails.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography, Box, Container, Card, CardMedia, CardContent, Rating, Chip } from '@mui/material';
@@ -9,36 +8,18 @@ import TrailInfo from './TrailInfo';
 import TrailReviews from './TrailReviews';
 import TransportationOptions from './TransportationOptions';
 
-const calculateCentroid = (coordinates) => {
-  let sumLat = 0;
-  let sumLng = 0;
-  let count = 0;
-
-  coordinates.forEach((lineString) => {
-    lineString.forEach((coord) => {
-      sumLat += coord[1];
-      sumLng += coord[0];
-      count++;
-    });
-  });
-
-  const avgLat = sumLat / count;
-  const avgLng = sumLng / count;
-
-  return [avgLat, avgLng];
-};
-
 const TrailDetails = () => {
   const { id } = useParams();
   const [trail, setTrail] = useState(null);
   const [geoJsonData, setGeoJsonData] = useState(null);
-  const [centroid, setCentroid] = useState(null);
+  const [bbox, setBbox] = useState(null);
 
   useEffect(() => {
     const fetchTrail = () => {
       const trailRef = ref(db, `trails/${id}`);
       onValue(trailRef, (snapshot) => {
         const trailData = snapshot.val();
+        console.log('Trail data:', trailData);
         setTrail(trailData);
       });
     };
@@ -47,21 +28,30 @@ const TrailDetails = () => {
       const trackRef = ref(db, `trailTracks/${id}`);
       onValue(trackRef, (snapshot) => {
         const trackData = snapshot.val();
+        console.log('Track data:', trackData);
         setGeoJsonData(trackData);
 
-        if (trackData && trackData.features && trackData.features.length > 0) {
-          const coordinates = trackData.features[0].geometry.coordinates;
-          const centroid = calculateCentroid(coordinates);
-          setCentroid(centroid);
+        if (trackData && trackData.geometry) {
+          console.log('Geometry:', trackData.geometry.bbox);
+          const bbox = trackData.geometry.bbox;
+          console.log('Bounding box:', bbox);
+          setBbox(bbox);
+        } else {
+          console.log('Track data does not have the expected structure');
         }
       });
     };
 
+    console.log('Fetching trail data for ID:', id);
     fetchTrail();
+    console.log('Fetching trail track data for ID:', id);
     fetchTrailTrack();
   }, [id]);
 
-  if (!trail || !centroid) {
+  console.log('Trail:', trail);
+  console.log('Bounding box:', bbox);
+
+  if (!trail || !bbox) {
     return <div>Loading...</div>;
   }
 
@@ -99,23 +89,37 @@ const TrailDetails = () => {
       </Card>
 
       <Box mt={4}>
-        <Map center={centroid} zoom={15} width="100%" height={400}>
-          {geoJsonData && (
-            <GeoJson
-              data={geoJsonData}
-              styleCallback={(feature, hover) => {
-                if (feature.geometry.type === 'LineString') {
-                  return { strokeWidth: '40', stroke: '#FF0000' };
-                }
-                return {
-                  strokeWidth: "5",
-                  stroke: "red",
-                };
-              }}
-            />
-          )}
-        </Map>
-      </Box>
+  {bbox && geoJsonData && (
+    <Map
+      center={[(bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2]}
+      zoom={12}
+      width="100%"
+      height={400}
+    >
+      {geoJsonData && (
+        <GeoJson
+          data={{
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: geoJsonData.geometry,
+                properties: geoJsonData.properties,
+              },
+            ],
+          }}
+          styleCallback={(feature, hover) => ({
+            stroke: 'green',
+            strokeWidth: 5,
+            fill: 'none',
+            r: feature.geometry.type === 'Point' ? 8 : undefined,
+            fillOpacity: feature.geometry.type === 'Point' ? 1 : undefined,
+          })}
+        />
+      )}
+    </Map>
+  )}
+</Box>
     </Container>
   );
 };
