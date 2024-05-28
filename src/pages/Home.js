@@ -16,6 +16,7 @@ const Home = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -34,6 +35,8 @@ const Home = () => {
           userLocation = await getUserLocation();
           localStorage.setItem('userLocation', JSON.stringify(userLocation));
         }
+
+        setUserLocation(userLocation);
 
         const trails = await fetchTrailsData(userLocation);
         const posts = await fetchCommunityPostsData();
@@ -60,10 +63,10 @@ const Home = () => {
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
-      <Container sx={{ mt: 4, mb: 4 }}>
-        <Box pb={7}>
+      <Container sx={{ mt: 4, mb: 2 }}>
+        <Box pb={4}>
           <Typography variant="h4" component="h1" gutterBottom>
-            Welcome to WalkSeattle
+            Welcome to WalkSeattle!
           </Typography>
           <Typography variant="body1">
             Discover urban hiking trails in Seattle and connect with fellow hikers.
@@ -75,18 +78,21 @@ const Home = () => {
           link="/discover?sort=distance&order=asc"
           trails={nearbyTrails}
           loading={loading}
+          userLocation={userLocation}
         />
         <Section
           title="Popular trails"
           link="/discover?sort=numReviews&order=desc"
           trails={popularTrails}
           loading={loading}
+          userLocation={userLocation}
         />
         <Section
           title="Top rated trails"
           link="/discover?sort=rating&order=desc"
           trails={topRatedTrails}
           loading={loading}
+          userLocation={userLocation}
         />
         <Section
           title="Upcoming events"
@@ -99,7 +105,7 @@ const Home = () => {
   );
 };
 
-const Section = ({ title, link, trails, events, loading }) => (
+const Section = ({ title, link, trails, events, loading, userLocation }) => (
   <Box mb={4}>
     <Card>
       <CardActionArea component={RouterLink} to={link}>
@@ -123,7 +129,7 @@ const Section = ({ title, link, trails, events, loading }) => (
             <>
               {trails && trails.map((trail) => (
                 <Grid item key={trail.id}>
-                  <TrailCard trail={trail} />
+                  <TrailCard trail={trail} userLocation={userLocation} />
                 </Grid>
               ))}
               {events && events.map((event) => (

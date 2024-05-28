@@ -1,5 +1,3 @@
-// src/pages/TrailDiscoveryPage.js
-
 import React, { useState, useEffect } from 'react';
 import { Container } from '@mui/material';
 import TrailList from '../components/TrailDiscovery/TrailList';
@@ -14,6 +12,7 @@ const TrailDiscoveryPage = () => {
   const [trails, setTrails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -32,6 +31,8 @@ const TrailDiscoveryPage = () => {
           location = await getUserLocation();
           localStorage.setItem('userLocation', JSON.stringify(location));
         }
+
+        setUserLocation(location);
 
         const trailsData = await fetchTrailsData(location);
         setTrails(trailsData);
@@ -69,6 +70,7 @@ const TrailDiscoveryPage = () => {
         sortBy={sortBy}
         sortOrder={sortOrder}
         searchQuery={searchQuery}
+        userLocation={userLocation}
       />
     </Container>
   );

@@ -3,8 +3,7 @@ import { Grid, Skeleton, Typography } from '@mui/material';
 import TrailCard from './TrailCard';
 import { sortTrailsData } from '../../utils/dataUtils';
 
-const TrailList = ({ trails, loading, sortBy, sortOrder, searchQuery }) => {
-  const filteredTrails = trails.filter((trail) =>
+const TrailList = ({ trails, loading, sortBy, sortOrder, searchQuery, userLocation }) => {  const filteredTrails = trails.filter((trail) =>
     trail.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -25,7 +24,7 @@ const TrailList = ({ trails, loading, sortBy, sortOrder, searchQuery }) => {
       ) : (
         sortedTrails.map((trail) => (
           <Grid item xs={12} sm={6} md={4} key={trail.id}>
-            <TrailCard trail={trail} />
+            <TrailCard trail={trail} userLocation={userLocation} />
           </Grid>
         ))
       )}

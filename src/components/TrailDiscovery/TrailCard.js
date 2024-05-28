@@ -14,6 +14,8 @@ import FavoriteButton from '../FavoriteButton';
 import { Link as RouterLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { calculateDistance } from '../../utils/distance';
+import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import DirectionsIcon from '@mui/icons-material/Directions';
 
 const Link = styled(RouterLink)({
   textDecoration: 'none',
@@ -60,10 +62,17 @@ const TrailCard = ({ trail, userLocation }) => {
             {trail.name}
           </Typography>
           <Box>
-            <Box display="flex" alignItems="center" mb={1}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
               <Typography variant="body2" color="text.secondary">
-                {trail.length} miles
+                <DirectionsWalkIcon sx={{ fontSize: 14, mr: 0.5 }}/>
+                {trail.length} miles long
               </Typography>
+              {distance && (
+                <Typography variant="body2" color="text.secondary">
+                  <DirectionsIcon sx={{ fontSize: 14, mr: 0.5 }}/>
+                  {distance} miles away
+                </Typography>
+              )}
             </Box>
             <Box display="flex" justifyContent="space-between" alignItems="center">
               <Rating value={trail.rating} precision={0.5} readOnly />
