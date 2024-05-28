@@ -13,6 +13,7 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
   const [user, setUser] = useState(null);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const currentUser = auth.currentUser;
+  const [isRSVP, setIsRSVP] = useState(false);
 
   useEffect(() => {
     const fetchTrail = () => {
@@ -33,9 +34,27 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
       });
     };
 
+    const fetchRSVPStatus = () => {
+      if (currentUser) {
+        const rsvpRef = ref(db, `users/${currentUser.uid}/rsvps/${post.id}`);
+        onValue(rsvpRef, (snapshot) => {
+          setIsRSVP(snapshot.exists());
+        });
+      }
+    };
+
     fetchTrail();
     fetchUser();
-  }, [post]);
+    fetchRSVPStatus();
+  }, [post, currentUser]);
+
+  const handleDeleteConfirmation = () => {
+    setDeleteConfirmationOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmationOpen(false);
+  };
 
   const handleDeletePost = () => {
     const postRef = ref(db, `communityPosts/${post.id}`);
@@ -51,12 +70,12 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
 
   return (
     <>
-      <Card>
-        <CardActionArea component={RouterLink} to={`/post/${post.id}`}>
+      <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <CardActionArea component={RouterLink} to={`/post/${post.id}`} sx={{ flexGrow: 1 }}>
           {trail && (
             <CardMedia component="img" height="140" image={trail.image} alt={trail.name} />
           )}
-          <CardContent>
+          <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <Typography gutterBottom variant="h5" component="div">
               {post.title}
             </Typography>
@@ -71,7 +90,6 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
                       {months[new Date(post.date).getMonth()]}
                     </Typography>
                   </Stack>
-
                 </Paper>
               )}
               {user && (
@@ -89,7 +107,7 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
           <Button component={RouterLink} to={`/post/${post.id}`} size="small">
             View Details
           </Button>
-          {post.type === 'event' && <RSVPButton postId={post.id} />}
+          {post.type === 'event' && <RSVPButton postId={post.id} isRSVP={isRSVP} />}
           {currentUser && currentUser.uid === post.userId && (
             <Button size="small" color="error" onClick={() => setDeleteConfirmationOpen(true)}>
               Delete
@@ -97,13 +115,13 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
           )}
         </CardActions>
       </Card>
-      <Dialog open={deleteConfirmationOpen} onClose={() => setDeleteConfirmationOpen(false)}>
+      <Dialog open={deleteConfirmationOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to delete this post?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirmationOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
           <Button onClick={handleDeletePost} color="error">Delete</Button>
         </DialogActions>
       </Dialog>

@@ -11,7 +11,7 @@ const FavoriteButton = ({ trailId }) => {
   useEffect(() => {
     const user = auth.currentUser;
     if (user) {
-      const favoriteRef = ref(db, `favorites/${user.uid}/${trailId}`);
+      const favoriteRef = ref(db, `users/${user.uid}/favorites/${trailId}`);
       onValue(favoriteRef, (snapshot) => {
         setIsFavorite(snapshot.exists());
       });
@@ -21,7 +21,7 @@ const FavoriteButton = ({ trailId }) => {
   const handleFavorite = () => {
     const user = auth.currentUser;
     if (user) {
-      const favoriteRef = ref(db, `favorites/${user.uid}/${trailId}`);
+      const favoriteRef = ref(db, `users/${user.uid}/favorites/${trailId}`);
       if (isFavorite) {
         remove(favoriteRef);
       } else {
