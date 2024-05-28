@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardActions, Typography, Button, CardMedia, CardActionArea, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Stack, Paper, Card, CardContent, CardActions, Typography, Button, CardMedia, CardActionArea, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import RSVPButton from './RSVPButton';
 import { ref, onValue, remove } from 'firebase/database';
 import { db, auth } from '../../firebase/firebase';
+import PersonIcon from '@mui/icons-material/Person';
+
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const CommunityPostCard = ({ post, onDeletePost }) => {
   const [trail, setTrail] = useState(null);
@@ -57,19 +60,29 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
             <Typography gutterBottom variant="h5" component="div">
               {post.title}
             </Typography>
+            <Box display="flex" justifyContent="space-between">
+              {post.type === 'event' && post.date && (
+                <Paper elevation={1} sx={{ px: 1 }}>
+                  <Stack spacing={0}>
+                    <Typography variant="h6" textAlign="center" lineHeight={1} mt={.5}>
+                      {new Date(post.date).getDay()}
+                    </Typography>
+                    <Typography variant="body1" textAlign="center" lineHeight={1} mb={.5}>
+                      {months[new Date(post.date).getMonth()]}
+                    </Typography>
+                  </Stack>
+
+                </Paper>
+              )}
+              {user && (
+                <Typography variant="h6" color="text.secondary" fontSize={20} display="flex" alignItems="center">
+                  <PersonIcon sx={{ mr: 0.5 }}/> {user.username}
+                </Typography>
+              )}
+            </Box>
             <Typography variant="body2" color="text.secondary">
               {post.description}
             </Typography>
-            {post.type === 'event' && post.date && (
-              <Typography variant="body2" color="text.secondary">
-                Date: {new Date(post.date).toLocaleDateString()}
-              </Typography>
-            )}
-            {user && (
-              <Typography variant="body2" color="text.secondary">
-                Posted by: {user.username}
-              </Typography>
-            )}
           </CardContent>
         </CardActionArea>
         <CardActions>
