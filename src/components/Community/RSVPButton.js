@@ -3,6 +3,7 @@ import { ref, set, remove } from 'firebase/database';
 import { db, auth } from '../../firebase/firebase';
 import { Button } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import AddIcon from '@mui/icons-material/Add';
 
 const RSVPButton = ({ postId, isRSVP, onRSVPChange }) => {
   const handleRSVP = () => {
@@ -39,8 +40,8 @@ const RSVPButton = ({ postId, isRSVP, onRSVPChange }) => {
   };
 
   return (
-    <Button onClick={handleRSVP} variant={isRSVP ? 'contained' : 'outlined'} startIcon={isRSVP && <CheckIcon />}>
-      {isRSVP ? 'RSVP\'d' : 'RSVP +'}
+    <Button onClick={handleRSVP} variant={isRSVP ? 'contained' : 'outlined'} startIcon={isRSVP ? <CheckIcon /> : <AddIcon />}>
+      {isRSVP ? 'RSVP\'d' : 'RSVP'}
     </Button>
   );
 };

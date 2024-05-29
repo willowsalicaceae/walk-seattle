@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme/theme';
 import AppBarComponent from './components/Navigation/AppBar';
@@ -11,7 +11,7 @@ import CommunityPage from './pages/CommunityPage';
 import ProfilePage from './pages/ProfilePage';
 import SignUp from './components/User/SignUp';
 import SignIn from './components/User/SignIn';
-import FavoritesPage from './pages/FavoritesPage';
+import SavedPage from './pages/SavedPage';
 import { AuthProvider } from './contexts/AuthContext';
 import CreatePostPage from './pages/CreatePostPage';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -35,7 +35,7 @@ const App = () => {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />
-              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/saved" element={<SavedPage />} />
             </Routes>
             <BottomNavigationComponent />
           </Router>

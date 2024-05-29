@@ -23,9 +23,21 @@ const FavoriteButton = ({ trailId }) => {
     if (user) {
       const favoriteRef = ref(db, `users/${user.uid}/favorites/${trailId}`);
       if (isFavorite) {
-        remove(favoriteRef);
+        remove(favoriteRef)
+          .then(() => {
+            console.log('Favorite removed from the database');
+          })
+          .catch((error) => {
+            console.error('Error removing favorite:', error);
+          });
       } else {
-        set(favoriteRef, true);
+        set(favoriteRef, true)
+          .then(() => {
+            console.log('Favorite added to the database');
+          })
+          .catch((error) => {
+            console.error('Error adding favorite:', error);
+          });
       }
     }
   };

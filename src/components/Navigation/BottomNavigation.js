@@ -1,6 +1,6 @@
 import React from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Paper } from '@mui/material';
-import { Home, Explore, Group, Person, Favorite } from '@mui/icons-material';
+import { Home, Explore, Group, Bookmark } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 
 const BottomNavigationComponent = () => {
@@ -32,18 +32,11 @@ const BottomNavigationComponent = () => {
             value="/community"
           />
           <BottomNavigationAction
-            label="Profile"
-            icon={<Person />}
+            label="Saved"
+            icon={<Bookmark />}
             component={Link}
-            to="/profile"
-            value="/profile"
-          />
-          <BottomNavigationAction
-            label="Favorites"
-            icon={<Favorite />}
-            component={Link}
-            to="/favorites"
-            value="/favorites"
+            to="/saved"
+            value="/saved"
           />
         </BottomNavigation>
       </Paper>
