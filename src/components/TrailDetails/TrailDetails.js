@@ -5,16 +5,35 @@ import { Map, GeoJson } from 'pigeon-maps';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import TrailReviews from './TrailReviews';
-import TransportationOptions from './TransportationOptions';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import { calculateDistance } from '../../utils/distance';
+import getUserLocation from '../../utils/location';
 
-const TrailDetails = ({ userLocation }) => {
+const TrailDetails = () => {
   const { id } = useParams();
   const [trail, setTrail] = useState(null);
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [bbox, setBbox] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const cachedLocation = localStorage.getItem('userLocation');
+      let location;
+
+      if (cachedLocation) {
+        location = JSON.parse(cachedLocation);
+      } else {
+        location = await getUserLocation();
+        localStorage.setItem('userLocation', JSON.stringify(location));
+      }
+
+      setUserLocation(location);
+    };
+
+    fetchData();
+  }, []);
 
   const distance = userLocation
     ? calculateDistance(
@@ -116,8 +135,6 @@ const TrailDetails = ({ userLocation }) => {
             Description
           </Typography>
           <Typography variant="body1">{trail.description}</Typography>
-          <TrailReviews trail={trail} />
-          <TransportationOptions trail={trail} />
           <Box mt={4}>
             {bbox && geoJsonData && (
               <Map

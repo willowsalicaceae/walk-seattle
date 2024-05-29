@@ -83,7 +83,7 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
                 <Paper elevation={1} sx={{ px: 1 }}>
                   <Stack spacing={0}>
                     <Typography variant="h6" textAlign="center" lineHeight={1} mt={.5}>
-                      {new Date(post.date).getDay()}
+                      {new Date(post.date).getDate()}
                     </Typography>
                     <Typography variant="body1" textAlign="center" lineHeight={1} mb={.5}>
                       {months[new Date(post.date).getMonth()]}
@@ -97,7 +97,7 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
                 </Typography>
               )}
             </Box>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" mt={1}>
               {post.description}
             </Typography>
           </CardContent>

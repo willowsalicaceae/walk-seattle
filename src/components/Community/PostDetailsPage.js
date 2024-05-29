@@ -121,7 +121,7 @@ const PostDetailsPage = () => {
     <Container maxWidth="sm">
       <Card>
         {trail && (
-          <CardActionArea onClick={() => navigate(`/trail/${id}`)}>
+          <CardActionArea onClick={() => navigate(`/trail/${post.trailId}`)}>
             <CardMedia
               component="img"
               height="300"
