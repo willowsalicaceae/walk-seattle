@@ -48,10 +48,6 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
     fetchRSVPStatus();
   }, [post, currentUser]);
 
-  const handleDeleteConfirmation = () => {
-    setDeleteConfirmationOpen(true);
-  };
-
   const handleDeleteCancel = () => {
     setDeleteConfirmationOpen(false);
   };
@@ -66,6 +62,9 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
       .catch((error) => {
         console.error('Error deleting post:', error);
       });
+  };
+  const handleRSVPChange = (newRSVPStatus) => {
+    setIsRSVP(newRSVPStatus);
   };
 
   return (
@@ -107,7 +106,7 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
           <Button component={RouterLink} to={`/post/${post.id}`} size="small">
             View Details
           </Button>
-          {post.type === 'event' && <RSVPButton postId={post.id} isRSVP={isRSVP} />}
+          {post.type === 'event' && <RSVPButton postId={post.id} isRSVP={isRSVP} onRSVPChange={handleRSVPChange} />}
           {currentUser && currentUser.uid === post.userId && (
             <Button size="small" color="error" onClick={() => setDeleteConfirmationOpen(true)}>
               Delete

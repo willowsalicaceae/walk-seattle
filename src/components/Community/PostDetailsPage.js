@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Card, CardContent, CardMedia, List, ListItem, ListItemText, CardActionArea, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { ref, onValue, remove } from 'firebase/database';
+import { ref, onValue, remove, get } from 'firebase/database';
 import { db, auth } from '../../firebase/firebase';
 import RSVPButton from './RSVPButton';
 
@@ -12,8 +12,8 @@ const PostDetailsPage = () => {
   const [rsvpUsers, setRSVPUsers] = useState([]);
   const [trail, setTrail] = useState(null);
   const [isRSVP, setIsRSVP] = useState(false);
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const currentUser = auth.currentUser;
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   useEffect(() => {
     const fetchPost = () => {
@@ -21,24 +21,41 @@ const PostDetailsPage = () => {
       onValue(postRef, (snapshot) => {
         const postData = snapshot.val();
         setPost(postData);
+        console.log('Fetched post data:', postData);
       });
     };
 
     const fetchRSVPUsers = () => {
-      const rsvpRef = ref(db, `users`);
-      onValue(rsvpRef, (snapshot) => {
-        const usersData = snapshot.val();
-        if (usersData) {
-          const rsvpUsersList = Object.entries(usersData)
-            .filter(([_, userData]) => userData.rsvps && userData.rsvps[id])
-            .map(([_, userData]) => userData);
-          setRSVPUsers(rsvpUsersList);
+      const postRsvpsRef = ref(db, `communityPosts/${id}/rsvps`);
+      onValue(postRsvpsRef, (snapshot) => {
+        const rsvpData = snapshot.val();
+        if (rsvpData) {
+          const rsvpUserIds = Object.keys(rsvpData);
+          const userPromises = rsvpUserIds.map((userId) =>
+            get(ref(db, `users/${userId}`))
+          );
+
+          Promise.all(userPromises)
+            .then((userSnapshots) => {
+              const rsvpUsers = userSnapshots.map((snapshot) => snapshot.val());
+              setRSVPUsers(rsvpUsers);
+              console.log('Fetched RSVP users:', rsvpUsers);
+            })
+            .catch((error) => {
+              console.error('Error fetching RSVP users:', error);
+            });
         } else {
           setRSVPUsers([]);
+          console.log('No RSVP users found');
         }
       });
     };
 
+    fetchPost();
+    fetchRSVPUsers();
+  }, [id]);
+
+  useEffect(() => {
     const fetchTrail = () => {
       if (post && post.trailId) {
         const trailRef = ref(db, `trails/${post.trailId}`);
@@ -49,23 +66,32 @@ const PostDetailsPage = () => {
       }
     };
 
-    fetchPost();
-    fetchRSVPUsers();
     fetchTrail();
-  }, [id]);
+  }, [post]);
 
   useEffect(() => {
     const fetchRSVPStatus = () => {
       if (currentUser) {
-        const rsvpRef = ref(db, `users/${currentUser.uid}/rsvps/${id}`);
-        onValue(rsvpRef, (snapshot) => {
-          setIsRSVP(snapshot.exists());
+        const userRsvpRef = ref(db, `users/${currentUser.uid}/rsvps/${id}`);
+        onValue(userRsvpRef, (snapshot) => {
+          const rsvpStatus = snapshot.exists();
+          setIsRSVP(rsvpStatus);
+          console.log('Fetched RSVP status:', rsvpStatus);
+          console.log('Current user UID:', currentUser.uid);
+          console.log('Post ID:', id);
         });
+      } else {
+        console.log('User not authenticated');
       }
     };
 
     fetchRSVPStatus();
   }, [currentUser, id]);
+
+  const handleRSVPChange = (newRSVPStatus) => {
+    setIsRSVP(newRSVPStatus);
+    console.log('RSVP status changed:', newRSVPStatus);
+  };
 
   const handleDeleteConfirmation = () => {
     setDeleteConfirmationOpen(true);
@@ -80,6 +106,7 @@ const PostDetailsPage = () => {
     remove(postRef)
       .then(() => {
         navigate('/community');
+        console.log('Post deleted successfully');
       })
       .catch((error) => {
         console.error('Error deleting post:', error);
@@ -123,7 +150,7 @@ const PostDetailsPage = () => {
               <Typography variant="body2" color="text.secondary">
                 Time: {new Date(post.time).toLocaleTimeString()}
               </Typography>
-              <RSVPButton postId={post.id} isRSVP={isRSVP} />
+              <RSVPButton postId={id} isRSVP={isRSVP} onRSVPChange={handleRSVPChange} />
               <Typography variant="h6" gutterBottom>
                 RSVPs:
               </Typography>
