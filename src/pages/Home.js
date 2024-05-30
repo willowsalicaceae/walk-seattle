@@ -93,14 +93,16 @@ const Home = () => {
           </Typography>
         </Box>
 
-        <Section
-          title="Trails near me"
-          link="/discover?sort=distance&order=asc"
-          trails={nearbyTrails}
-          loading={loading}
-          userLocation={userLocation}
-          locationDeclined={locationDeclined}
-        />
+        {!locationDeclined && (
+          <Section
+            title="Trails near me"
+            link="/discover?sort=distance&order=asc"
+            trails={nearbyTrails}
+            loading={loading}
+            userLocation={userLocation}
+            locationDeclined={locationDeclined}
+          />
+        )}
         <Section
           title="Popular trails"
           link="/discover?sort=numReviews&order=desc"
