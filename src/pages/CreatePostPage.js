@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, TextField, Switch, FormControlLabel, Button, Grid } from '@mui/material';import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { Container, Typography, TextField, Switch, FormControlLabel, Button, Grid } from '@mui/material';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { ref, push } from 'firebase/database';
 import { db } from '../firebase/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Autocomplete } from '@mui/material';
+import { moderateText, sanitizeInput } from '../utils/moderation';
 
 const CreatePostPage = () => {
   const { currentUser } = useAuth();
@@ -36,10 +38,15 @@ const CreatePostPage = () => {
       return;
     }
 
+    const sanitizedTitle = sanitizeInput(title);
+    const sanitizedDescription = sanitizeInput(description);
+    const moderatedTitle = moderateText(sanitizedTitle);
+    const moderatedDescription = moderateText(sanitizedDescription);
+
     try {
       const newPost = {
-        title,
-        description,
+        title: moderatedTitle,
+        description: moderatedDescription,
         type: isEvent ? 'event' : 'text',
         userId: currentUser.uid,
       };

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { ref, update, get } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import { TextField, Button } from '@mui/material';
+import { moderateText, sanitizeInput } from '../../utils/moderation';
 
 const ProfileSettings = () => {
   const { currentUser } = useAuth();
@@ -17,6 +18,9 @@ const ProfileSettings = () => {
       return;
     }
 
+    const sanitizedUsername = sanitizeInput(newUsername);
+    const moderatedUsername = moderateText(sanitizedUsername);
+
     try {
       // Check if the new username is already taken by another user
       const usersRef = ref(db, 'users');
@@ -24,7 +28,7 @@ const ProfileSettings = () => {
       const users = snapshot.val();
 
       const existingUser = Object.values(users).find(
-        (user) => user.username === newUsername && user.uid !== currentUser.uid
+        (user) => user.username === moderatedUsername && user.uid !== currentUser.uid
       );
 
       if (existingUser) {
@@ -34,7 +38,7 @@ const ProfileSettings = () => {
 
       // Update the username in the 'users' node using the UID
       await update(ref(db, `users/${currentUser.uid}`), {
-        username: newUsername,
+        username: moderatedUsername,
       });
 
       // Show success message or redirect to profile page

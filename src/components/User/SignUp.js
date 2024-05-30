@@ -5,6 +5,7 @@ import { auth, db } from '../../firebase/firebase';
 import { ref, set, get } from 'firebase/database';
 import { Alert, TextField, Button, Container, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { moderateText, sanitizeInput } from '../../utils/moderation';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -22,6 +23,9 @@ const SignUp = () => {
       return;
     }
 
+    const sanitizedUsername = sanitizeInput(username);
+    const moderatedUsername = moderateText(sanitizedUsername);
+
     try {
       // Check if the username is already taken
       const usersRef = ref(db, 'users');
@@ -29,7 +33,7 @@ const SignUp = () => {
       const users = snapshot.val();
 
       const existingUser = Object.values(users).find(
-        (user) => user.username === username
+        (user) => user.username === moderatedUsername
       );
 
       if (existingUser) {
@@ -42,7 +46,7 @@ const SignUp = () => {
 
       // Store user data using the UID as the key
       await set(ref(db, `users/${user.uid}`), {
-        username,
+        username: moderatedUsername,
       });
 
       navigate('/', { state: { alert: 'Sign up successful! You are now logged in.' } });
