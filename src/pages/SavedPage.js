@@ -4,17 +4,22 @@ import { ref, onValue, get } from 'firebase/database';
 import { db, auth } from '../firebase/firebase';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
+import { useAuth } from '../contexts/AuthContext';
 
 const SavedPage = () => {
+  const { currentUser } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [rsvpEvents, setRsvpEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
+    if (!currentUser) {
+      return; // Exit early if there's no current user
+    }
+
+    const fetchData = async () => {
       // Fetch favorited trails
-      const favoritesRef = ref(db, `users/${user.uid}/favorites`);
+      const favoritesRef = ref(db, `users/${currentUser.uid}/favorites`);
       onValue(favoritesRef, async (snapshot) => {
         const favoritesData = snapshot.val();
         if (favoritesData) {
@@ -35,7 +40,7 @@ const SavedPage = () => {
       });
 
       // Fetch RSVP'd events
-      const rsvpsRef = ref(db, `users/${user.uid}/rsvps`);
+      const rsvpsRef = ref(db, `users/${currentUser.uid}/rsvps`);
       onValue(rsvpsRef, async (snapshot) => {
         const rsvpsData = snapshot.val();
         if (rsvpsData) {
@@ -53,8 +58,10 @@ const SavedPage = () => {
           setRsvpEvents([]);
         }
       });
-    }
-  }, []);
+    };
+
+    fetchData();
+  }, [currentUser]);
 
   if (loading) {
     return (

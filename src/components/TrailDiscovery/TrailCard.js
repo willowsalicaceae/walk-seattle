@@ -37,6 +37,9 @@ const TrailCard = ({ trail, userLocation }) => {
       ).toFixed(1)
     : null;
 
+  // Ensure rating is a number
+  const ratingValue = Number(trail.rating);
+
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardActionArea component={Link} to={`/trail/${trail.id}`} sx={{ flexGrow: 1 }}>
@@ -75,7 +78,7 @@ const TrailCard = ({ trail, userLocation }) => {
               )}
             </Box>
             <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Rating value={trail.rating} precision={0.5} readOnly />
+              <Rating value={ratingValue} precision={0.5} readOnly />
               <Typography variant="body2" color="text.secondary" ml={1}>
                 ({trail.numReviews} reviews)
               </Typography>
