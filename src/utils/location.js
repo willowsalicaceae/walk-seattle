@@ -7,8 +7,22 @@ export const getUserLocation = () => {
           resolve({ latitude, longitude });
         },
         (error) => {
-          console.log('User denied location permission or an error occurred.');
-          reject(error);
+          let errorMessage;
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'User denied the request for Geolocation.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'Location information is unavailable.';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'The request to get user location timed out.';
+              break;
+            default:
+              errorMessage = 'An unknown error occurred.';
+              break;
+          }
+          reject(new Error(errorMessage));
         },
         {
           enableHighAccuracy: true,
@@ -17,10 +31,8 @@ export const getUserLocation = () => {
         }
       );
     } else {
-      console.log('Geolocation is not supported by this browser.');
-      reject(new Error('Geolocation is not supported'));
+      reject(new Error('Geolocation is not supported by this browser.'));
     }
   });
 };
-
 export default getUserLocation;

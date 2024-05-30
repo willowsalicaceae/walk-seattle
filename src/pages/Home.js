@@ -58,9 +58,10 @@ const Home = () => {
       const location = await getUserLocation();
       setUserLocation(location);
       localStorage.setItem('userLocation', JSON.stringify(location));
+      setLocationError(''); // Clear any previous error
     } catch (error) {
       console.log('Error getting location:', error);
-      setLocationError('Unable to retrieve your location. Please check your browser settings and try again.');
+      setLocationError('Failed to get location. Please check your browser settings and try again.');
     }
   };
 
