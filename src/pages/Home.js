@@ -15,6 +15,19 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+
+  const handleGetLocation = async () => {
+    try {
+      const location = await getUserLocation();
+      setUserLocation(location);
+      localStorage.setItem('userLocation', JSON.stringify(location));
+      setLocationError(null);
+    } catch (error) {
+      console.log('Error getting location:', error);
+      setLocationError('Failed to get location. Please check your browser settings and try again.');
+    }
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -52,16 +65,6 @@ const Home = () => {
     fetchData();
   }, [isMounted, userLocation]);
 
-  const handleGetLocation = async () => {
-    try {
-      const location = await getUserLocation();
-      setUserLocation(location);
-      localStorage.setItem('userLocation', JSON.stringify(location));
-    } catch (error) {
-      console.log('Error getting location:', error);
-    }
-  };
-
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
@@ -78,6 +81,11 @@ const Home = () => {
         <Button variant="contained" color="primary" onClick={handleGetLocation}>
           Get My Location
         </Button>
+        {locationError && (
+          <Typography variant="body1" color="error" sx={{ mt: 2 }}>
+            {locationError}
+          </Typography>
+        )}
 
         <Section
           title="Trails near me"
