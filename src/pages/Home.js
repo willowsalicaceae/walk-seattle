@@ -19,6 +19,7 @@ const Home = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [locationDeclined, setLocationDeclined] = useState(false);
   const [getLocation, setGetLocation] = useState(null);
+  const [locationPermission, setLocationPermission] = useState(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -33,14 +34,14 @@ const Home = () => {
 
         if (cachedLocation) {
           userLocation = JSON.parse(cachedLocation);
+          setUserLocation(userLocation);
         } else {
-          const result = await getUserLocation();
-          if (result && result.getLocation) {
-            setGetLocation(() => result.getLocation);
-          } else if (result && result.declined) {
-            setLocationDeclined(true);
-          } else {
-            setUserLocation(null);
+          try {
+            userLocation = await getUserLocation();
+            setUserLocation(userLocation);
+            localStorage.setItem('userLocation', JSON.stringify(userLocation));
+          } catch (error) {
+            setLocationPermission('denied');
           }
         }
 
@@ -72,11 +73,27 @@ const Home = () => {
     }
   };
 
+  const handleEnableLocation = async () => {
+    try {
+      const userLocation = await getUserLocation();
+      setUserLocation(userLocation);
+      localStorage.setItem('userLocation', JSON.stringify(userLocation));
+      setLocationPermission('granted');
+    } catch (error) {
+      setLocationPermission('denied');
+    }
+  };
+
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
       {locationDeclined && (
         <Button variant="contained" color="primary" onClick={handleGetLocation}>
+          Enable Location
+        </Button>
+      )}
+      {locationPermission === 'denied' && (
+        <Button variant="contained" color="primary" onClick={handleEnableLocation}>
           Enable Location
         </Button>
       )}
