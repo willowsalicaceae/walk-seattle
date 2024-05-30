@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/walk-seattle/static/css/main.b6b91eb1.css",
-    "main.js": "/walk-seattle/static/js/main.60645968.js",
+    "main.js": "/walk-seattle/static/js/main.4a3bc25d.js",
     "static/js/453.20c82eb8.chunk.js": "/walk-seattle/static/js/453.20c82eb8.chunk.js",
     "static/media/placeholder.png": "/walk-seattle/static/media/placeholder.022a88ff60b512b4c025.png",
     "static/media/montserrat-latin-700-normal.woff": "/walk-seattle/static/media/montserrat-latin-700-normal.f1715a34ee999e9315e6.woff",
@@ -37,11 +37,11 @@
     "static/media/montserrat-vietnamese-500-normal.woff2": "/walk-seattle/static/media/montserrat-vietnamese-500-normal.f8f72c43a8bce47aaeb4.woff2",
     "index.html": "/walk-seattle/index.html",
     "main.b6b91eb1.css.map": "/walk-seattle/static/css/main.b6b91eb1.css.map",
-    "main.60645968.js.map": "/walk-seattle/static/js/main.60645968.js.map",
+    "main.4a3bc25d.js.map": "/walk-seattle/static/js/main.4a3bc25d.js.map",
     "453.20c82eb8.chunk.js.map": "/walk-seattle/static/js/453.20c82eb8.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b6b91eb1.css",
-    "static/js/main.60645968.js"
+    "static/js/main.4a3bc25d.js"
   ]
 }
