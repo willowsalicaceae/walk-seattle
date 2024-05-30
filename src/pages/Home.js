@@ -1,11 +1,9 @@
-// src/pages/Home.js
-
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { Alert, Button, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton } from '@mui/material';
+import { Alert, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton, Button } from '@mui/material';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
-import getUserLocation from '../utils/location';
+import { getUserLocation } from '../utils/location';
 import { fetchTrailsData, fetchCommunityPostsData, sortTrailsData } from '../utils/dataUtils';
 
 const Home = () => {
@@ -17,9 +15,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
-  const [locationDeclined, setLocationDeclined] = useState(false);
-  const [getLocation, setGetLocation] = useState(null);
-  const [locationPermission, setLocationPermission] = useState(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -30,19 +25,9 @@ const Home = () => {
     const fetchData = async () => {
       if (isMounted) {
         const cachedLocation = localStorage.getItem('userLocation');
-        let userLocation;
 
         if (cachedLocation) {
-          userLocation = JSON.parse(cachedLocation);
-          setUserLocation(userLocation);
-        } else {
-          try {
-            userLocation = await getUserLocation();
-            setUserLocation(userLocation);
-            localStorage.setItem('userLocation', JSON.stringify(userLocation));
-          } catch (error) {
-            setLocationPermission('denied');
-          }
+          setUserLocation(JSON.parse(cachedLocation));
         }
 
         const trails = await fetchTrailsData(userLocation);
@@ -65,38 +50,21 @@ const Home = () => {
     };
 
     fetchData();
-  }, [isMounted]);
+  }, [isMounted, userLocation]);
 
-  const handleGetLocation = () => {
-    if (getLocation) {
-      getLocation();
-    }
-  };
-
-  const handleEnableLocation = async () => {
+  const handleGetLocation = async () => {
     try {
-      const userLocation = await getUserLocation();
-      setUserLocation(userLocation);
-      localStorage.setItem('userLocation', JSON.stringify(userLocation));
-      setLocationPermission('granted');
+      const location = await getUserLocation();
+      setUserLocation(location);
+      localStorage.setItem('userLocation', JSON.stringify(location));
     } catch (error) {
-      setLocationPermission('denied');
+      console.log('Error getting location:', error);
     }
   };
 
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
-      {locationDeclined && (
-        <Button variant="contained" color="primary" onClick={handleGetLocation}>
-          Enable Location
-        </Button>
-      )}
-      {locationPermission === 'denied' && (
-        <Button variant="contained" color="primary" onClick={handleEnableLocation}>
-          Enable Location
-        </Button>
-      )}
       <Container sx={{ mt: 4, mb: 2 }}>
         <Box pb={4}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -107,23 +75,23 @@ const Home = () => {
           </Typography>
         </Box>
 
-        {!locationDeclined && (
-          <Section
-            title="Trails near me"
-            link="/discover?sort=distance&order=asc"
-            trails={nearbyTrails}
-            loading={loading}
-            userLocation={userLocation}
-            locationDeclined={locationDeclined}
-          />
-        )}
+        <Button variant="contained" color="primary" onClick={handleGetLocation}>
+          Get My Location
+        </Button>
+
+        <Section
+          title="Trails near me"
+          link="/discover?sort=distance&order=asc"
+          trails={nearbyTrails}
+          loading={loading}
+          userLocation={userLocation}
+        />
         <Section
           title="Popular trails"
           link="/discover?sort=numReviews&order=desc"
           trails={popularTrails}
           loading={loading}
           userLocation={userLocation}
-          locationDeclined={locationDeclined}
         />
         <Section
           title="Top rated trails"
@@ -131,7 +99,6 @@ const Home = () => {
           trails={topRatedTrails}
           loading={loading}
           userLocation={userLocation}
-          locationDeclined={locationDeclined}
         />
         <Section
           title="Upcoming events"
@@ -144,7 +111,7 @@ const Home = () => {
   );
 };
 
-const Section = ({ title, link, trails, events, loading, userLocation, locationDeclined }) => (
+const Section = ({ title, link, trails, events, loading, userLocation }) => (
   <Box mb={4}>
     <Card>
       <CardActionArea component={RouterLink} to={link}>
@@ -166,21 +133,16 @@ const Section = ({ title, link, trails, events, loading, userLocation, locationD
             ))
           ) : (
             <>
-              {trails &&
-                trails.map((trail) => (
-                  <Grid item key={trail.id}>
-                    <TrailCard
-                      trail={trail}
-                      userLocation={locationDeclined ? null : userLocation}
-                    />
-                  </Grid>
-                ))}
-              {events &&
-                events.map((event) => (
-                  <Grid item key={event.id}>
-                    <CommunityPostCard post={event} />
-                  </Grid>
-                ))}
+              {trails && trails.map((trail) => (
+                <Grid item key={trail.id}>
+                  <TrailCard trail={trail} userLocation={userLocation} />
+                </Grid>
+              ))}
+              {events && events.map((event) => (
+                <Grid item key={event.id}>
+                  <CommunityPostCard post={event} />
+                </Grid>
+              ))}
             </>
           )}
         </Grid>

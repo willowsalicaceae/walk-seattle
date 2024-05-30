@@ -22,4 +22,5 @@ export const getUserLocation = () => {
     }
   });
 };
+
 export default getUserLocation;
