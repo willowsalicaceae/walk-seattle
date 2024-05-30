@@ -1,5 +1,7 @@
 # WalkSeattle
 
+[Click here](https://walk-seattle.vercel.app/) to view the live site!
+
 Once you've cloned this repo, install the dependencies.
 
 ### `npm i`
