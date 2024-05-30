@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { Alert, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton } from '@mui/material';
+import { Alert, Button, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton } from '@mui/material';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
 import getUserLocation from '../utils/location';
@@ -17,6 +17,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [locationDeclined, setLocationDeclined] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -33,10 +34,16 @@ const Home = () => {
           userLocation = JSON.parse(cachedLocation);
         } else {
           userLocation = await getUserLocation();
-          localStorage.setItem('userLocation', JSON.stringify(userLocation));
+          if (userLocation && !userLocation.declined) {
+            localStorage.setItem('userLocation', JSON.stringify(userLocation));
+          }
         }
 
-        setUserLocation(userLocation);
+        if (userLocation && userLocation.declined) {
+          setLocationDeclined(true);
+        } else {
+          setUserLocation(userLocation);
+        }
 
         const trails = await fetchTrailsData(userLocation);
         const posts = await fetchCommunityPostsData();
@@ -63,6 +70,19 @@ const Home = () => {
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
+      {locationDeclined && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            localStorage.removeItem('userLocation');
+            setLocationDeclined(false);
+            window.location.reload();
+          }}
+        >
+          Enable Location
+        </Button>
+      )}
       <Container sx={{ mt: 4, mb: 2 }}>
         <Box pb={4}>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -79,6 +99,7 @@ const Home = () => {
           trails={nearbyTrails}
           loading={loading}
           userLocation={userLocation}
+          locationDeclined={locationDeclined}
         />
         <Section
           title="Popular trails"
@@ -86,6 +107,7 @@ const Home = () => {
           trails={popularTrails}
           loading={loading}
           userLocation={userLocation}
+          locationDeclined={locationDeclined}
         />
         <Section
           title="Top rated trails"
@@ -93,6 +115,7 @@ const Home = () => {
           trails={topRatedTrails}
           loading={loading}
           userLocation={userLocation}
+          locationDeclined={locationDeclined}
         />
         <Section
           title="Upcoming events"
@@ -105,7 +128,7 @@ const Home = () => {
   );
 };
 
-const Section = ({ title, link, trails, events, loading, userLocation }) => (
+const Section = ({ title, link, trails, events, loading, userLocation, locationDeclined }) => (
   <Box mb={4}>
     <Card>
       <CardActionArea component={RouterLink} to={link}>
@@ -127,16 +150,21 @@ const Section = ({ title, link, trails, events, loading, userLocation }) => (
             ))
           ) : (
             <>
-              {trails && trails.map((trail) => (
-                <Grid item key={trail.id}>
-                  <TrailCard trail={trail} userLocation={userLocation} />
-                </Grid>
-              ))}
-              {events && events.map((event) => (
-                <Grid item key={event.id}>
-                  <CommunityPostCard post={event} />
-                </Grid>
-              ))}
+              {trails &&
+                trails.map((trail) => (
+                  <Grid item key={trail.id}>
+                    <TrailCard
+                      trail={trail}
+                      userLocation={locationDeclined ? null : userLocation}
+                    />
+                  </Grid>
+                ))}
+              {events &&
+                events.map((event) => (
+                  <Grid item key={event.id}>
+                    <CommunityPostCard post={event} />
+                  </Grid>
+                ))}
             </>
           )}
         </Grid>

@@ -67,9 +67,6 @@ const AppBarComponent = () => {
             <Button component={Link} to="/signin" variant="outlined" sx={{ marginRight: '8px', marginLeft: 'auto' }}>
               Sign In
             </Button>
-            <Button component={Link} to="/signup" variant="contained">
-              Sign Up
-            </Button>
           </>
         )}
       </Toolbar>
@@ -78,3 +75,9 @@ const AppBarComponent = () => {
 };
 
 export default AppBarComponent;
+
+/*
+<Button component={Link} to="/signup" variant="contained">
+  Sign Up
+</Button>
+*/

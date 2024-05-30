@@ -1,18 +1,36 @@
-import { ref, onValue } from 'firebase/database';
+import { ref, get, onValue } from 'firebase/database';
 import { db } from '../firebase/firebase';
 import { calculateDistance } from './distance';
 
 export const fetchTrailsData = async (userLocation) => {
   const cachedTrails = localStorage.getItem('trails');
   if (cachedTrails) {
-    return JSON.parse(cachedTrails);
+    const trails = JSON.parse(cachedTrails);
+    if (userLocation) {
+      return trails.map((trail) => ({
+        ...trail,
+        distance: calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          trail.latitude,
+          trail.longitude
+        ),
+      }));
+    } else {
+      return trails;
+    }
   } else {
     const trailsRef = ref(db, 'trails');
-    const snapshot = await onValue(trailsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const trails = Object.entries(data).map(([id, trail]) => ({
-          id,
+    const snapshot = await get(trailsRef);
+    const data = snapshot.val();
+    if (data) {
+      const trails = Object.entries(data).map(([id, trail]) => ({
+        id,
+        ...trail,
+      }));
+      localStorage.setItem('trails', JSON.stringify(trails));
+      if (userLocation) {
+        return trails.map((trail) => ({
           ...trail,
           distance: calculateDistance(
             userLocation.latitude,
@@ -21,12 +39,11 @@ export const fetchTrailsData = async (userLocation) => {
             trail.longitude
           ),
         }));
-        localStorage.setItem('trails', JSON.stringify(trails));
+      } else {
         return trails;
       }
-      return [];
-    });
-    return snapshot.val();
+    }
+    return [];
   }
 };
 
