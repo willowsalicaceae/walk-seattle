@@ -18,6 +18,7 @@ const Home = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [locationDeclined, setLocationDeclined] = useState(false);
+  const [getLocation, setGetLocation] = useState(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -33,16 +34,14 @@ const Home = () => {
         if (cachedLocation) {
           userLocation = JSON.parse(cachedLocation);
         } else {
-          userLocation = await getUserLocation();
-          if (userLocation && !userLocation.declined) {
-            localStorage.setItem('userLocation', JSON.stringify(userLocation));
+          const result = await getUserLocation();
+          if (result && result.getLocation) {
+            setGetLocation(() => result.getLocation);
+          } else if (result && result.declined) {
+            setLocationDeclined(true);
+          } else {
+            setUserLocation(null);
           }
-        }
-
-        if (userLocation && userLocation.declined) {
-          setLocationDeclined(true);
-        } else {
-          setUserLocation(userLocation);
         }
 
         const trails = await fetchTrailsData(userLocation);
@@ -67,19 +66,17 @@ const Home = () => {
     fetchData();
   }, [isMounted]);
 
+  const handleGetLocation = () => {
+    if (getLocation) {
+      getLocation();
+    }
+  };
+
   return (
     <>
       {location.state?.alert && <Alert severity="success">{location.state.alert}</Alert>}
       {locationDeclined && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            localStorage.removeItem('userLocation');
-            setLocationDeclined(false);
-            window.location.reload();
-          }}
-        >
+        <Button variant="contained" color="primary" onClick={handleGetLocation}>
           Enable Location
         </Button>
       )}

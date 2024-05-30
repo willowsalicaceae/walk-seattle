@@ -1,4 +1,4 @@
-const getUserLocation = () => {
+export const getUserLocation = () => {
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       const options = {
@@ -10,16 +10,20 @@ const getUserLocation = () => {
       const success = (position) => {
         const { latitude, longitude } = position.coords;
         resolve({ latitude, longitude });
-        navigator.geolocation.clearWatch(watchId);
       };
 
       const error = (err) => {
         console.log('User denied location permission or an error occurred.');
         resolve({ declined: true });
-        navigator.geolocation.clearWatch(watchId);
       };
 
-      const watchId = navigator.geolocation.watchPosition(success, error, options);
+      // Trigger the location request on button click
+      const getLocation = () => {
+        navigator.geolocation.getCurrentPosition(success, error, options);
+      };
+
+      // Resolve with a function that can be called to trigger the location request
+      resolve({ getLocation });
     } else {
       console.log('Geolocation is not supported by this browser.');
       resolve(null);
