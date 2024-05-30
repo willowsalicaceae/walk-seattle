@@ -28,7 +28,7 @@ const TrailCard = ({ trail, userLocation }) => {
     hard: 'warning',
   };
 
-  const distance = userLocation
+  const distance = userLocation && trail && trail.latitude && trail.longitude
     ? calculateDistance(
         userLocation.latitude,
         userLocation.longitude,

@@ -4,7 +4,6 @@ import { Button, Typography, Box, Container, Card, CardMedia, CardContent, Ratin
 import { Map, GeoJson } from 'pigeon-maps';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
-import TrailReviews from './TrailReviews';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import { calculateDistance } from '../../utils/distance';
@@ -35,7 +34,7 @@ const TrailDetails = () => {
     fetchData();
   }, []);
 
-  const distance = userLocation
+  const distance = userLocation && trail && trail.latitude && trail.longitude
     ? calculateDistance(
         userLocation.latitude,
         userLocation.longitude,
