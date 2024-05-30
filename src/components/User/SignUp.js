@@ -5,7 +5,6 @@ import { auth, db } from '../../firebase/firebase';
 import { ref, set, get } from 'firebase/database';
 import { Alert, TextField, Button, Container, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');

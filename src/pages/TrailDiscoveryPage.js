@@ -4,10 +4,14 @@ import TrailList from '../components/TrailDiscovery/TrailList';
 import SearchFilter from '../components/TrailDiscovery/SearchFilter';
 import { fetchTrailsData } from '../utils/dataUtils';
 import getUserLocation from '../utils/location';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const TrailDiscoveryPage = () => {
-  const [sortBy, setSortBy] = useState('');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || '');
+  const [sortOrder, setSortOrder] = useState(searchParams.get('order') || 'desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [trails, setTrails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,15 +45,22 @@ const TrailDiscoveryPage = () => {
     };
 
     fetchData();
-  }, [isMounted]);
+  }, [isMounted, sortBy, sortOrder]);
 
   const handleSortChange = (value) => {
     setSortBy(value);
+    const newSearchParams = new URLSearchParams(location.search);
+    newSearchParams.set('sort', value);
+    navigate(`${location.pathname}?${newSearchParams.toString()}`);
   };
 
   const handleSortOrderChange = (value) => {
     setSortOrder(value);
+    const newSearchParams = new URLSearchParams(location.search);
+    newSearchParams.set('order', value);
+    navigate(`${location.pathname}?${newSearchParams.toString()}`);
   };
+
 
   const handleSearch = (query) => {
     setSearchQuery(query);
