@@ -61,7 +61,7 @@ const Home = () => {
       setLocationError(''); // Clear any previous error
     } catch (error) {
       console.log('Error getting location:', error);
-      setLocationError('Failed to get location. Please check your browser settings and try again.');
+      setLocationError(`Failed to get location: ${error.message}`);
     }
   };
 
