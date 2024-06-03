@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Container, Typography, CircularProgress } from '@mui/material';
 import { ref, onValue, get } from 'firebase/database';
-import { db, auth } from '../firebase/firebase';
+import { db } from '../firebase/firebase';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
 import { useAuth } from '../contexts/AuthContext';

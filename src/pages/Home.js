@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { Alert, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Alert, Typography, Box, Container, Grid, Card, CardContent, CardActionArea, Skeleton, Button } from '@mui/material';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
 import { getUserLocation } from '../utils/location';
 import { fetchTrailsData, fetchCommunityPostsData, sortTrailsData } from '../utils/dataUtils';
+import LoadingButton from '@mui/lab/LoadingButton';
+import ShareLocationIcon from '@mui/icons-material/ShareLocation';
 
 const Home = () => {
   const location = useLocation();
@@ -16,6 +18,9 @@ const Home = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState('');
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationDenied, setLocationDenied] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -26,9 +31,14 @@ const Home = () => {
     const fetchData = async () => {
       if (isMounted) {
         const cachedLocation = localStorage.getItem('userLocation');
+        const deniedLocation = localStorage.getItem('locationDenied');
 
         if (cachedLocation) {
           setUserLocation(JSON.parse(cachedLocation));
+        } else if (deniedLocation) {
+          setLocationDenied(true);
+        } else {
+          setLocationDialogOpen(true);
         }
 
         const trails = await fetchTrailsData(userLocation);
@@ -55,15 +65,30 @@ const Home = () => {
 
   const handleGetLocation = async () => {
     try {
+      setLocationLoading(true);
       const location = await getUserLocation();
-      setUserLocation(location);
-      localStorage.setItem('userLocation', JSON.stringify(location));
-      setLocationError(''); // Clear any previous error
+      if (location) {
+        setUserLocation(location);
+        localStorage.setItem('userLocation', JSON.stringify(location));
+        localStorage.removeItem('locationDenied');
+        setLocationDenied(false);
+        setLocationError(''); // Clear any previous error
+      }
+      setLocationDialogOpen(false);
     } catch (error) {
       console.log('Error getting location:', error);
       setLocationError(`Failed to get location: ${error.message}`);
+    } finally {
+      setLocationLoading(false);
     }
   };
+
+  const handleLocationDenied = () => {
+    setLocationDialogOpen(false);
+    setLocationDenied(true);
+    localStorage.setItem('locationDenied', 'true');
+  };
+
 
   return (
     <>
@@ -77,11 +102,21 @@ const Home = () => {
           <Typography variant="body1">
             Discover urban hiking trails in Seattle and connect with fellow hikers.
           </Typography>
+          {locationDenied && (
+            <Box mt={2}>
+              <LoadingButton
+                onClick={handleGetLocation}
+                color="primary"
+                variant="contained"
+                loadingPosition="start"
+                startIcon={<ShareLocationIcon />}
+                loading={locationLoading}
+              >
+                Share my location
+              </LoadingButton>
+            </Box>
+          )}
         </Box>
-
-        <Button variant="contained" color="primary" onClick={handleGetLocation}>
-          Get My Location
-        </Button>
 
         <Section
           title="Trails near me"
@@ -111,6 +146,29 @@ const Home = () => {
           loading={loading}
         />
       </Container>
+      <Dialog open={locationDialogOpen} onClose={handleLocationDenied}>
+        <DialogTitle>WalkSeattle works better with your location</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enable your location to view nearby trails.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLocationDenied} color="primary">
+            No thanks
+          </Button>
+          <LoadingButton
+            onClick={handleGetLocation}
+            color="primary"
+            variant="contained"
+            loadingPosition="start"
+            startIcon={<ShareLocationIcon />}
+            loading={locationLoading}
+          >
+            Share my location
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
