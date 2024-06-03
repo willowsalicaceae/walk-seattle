@@ -1,4 +1,4 @@
-import profileImage from '../../img/placeholder.png'; // Import the profile image
+import profileImage from '../../img/placeholder.png';
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Avatar, Button, Menu, MenuItem } from '@mui/material';
 import { ReactComponent as Logo } from '../../img/logo.svg';
@@ -30,9 +30,11 @@ const AppBarComponent = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'white' }}>
+    <AppBar position="fixed" sx={{ backgroundColor: 'white', top: 0, bottom: 'auto' }}>
       <Toolbar>
-        <Logo style={{ height: '40px', width: 'auto', marginRight: '16px' }} />
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Logo style={{ height: '40px', width: 'auto', marginRight: '16px' }} />
+        </Link>
         {currentUser ? (
           <>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0, marginLeft: 'auto' }}>

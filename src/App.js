@@ -17,6 +17,7 @@ import CreatePostPage from './pages/CreatePostPage';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import PostDetailsPage from './components/Community/PostDetailsPage';
+import { Container } from '@mui/material';
 
 const App = () => {
   return (
@@ -25,18 +26,20 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <Router>
             <AppBarComponent />
-            <Routes>
-              <Route exact path="/" element={<Home />} />
-              <Route path="/discover" element={<TrailDiscoveryPage />} />
-              <Route path="/trail/:id" element={<TrailDetailsPage />} />
-              <Route path="/community" element={<CommunityPage />} />
-              <Route path="/community/create-post" element={<CreatePostPage />} />
-              <Route path="/post/:id" element={<PostDetailsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/saved" element={<SavedPage />} />
-            </Routes>
+            <Container sx={{ mt: 12, mb: 8 }}>
+              <Routes>
+                <Route exact path="/" element={<Home />} />
+                <Route path="/discover" element={<TrailDiscoveryPage />} />
+                <Route path="/trail/:id" element={<TrailDetailsPage />} />
+                <Route path="/community" element={<CommunityPage />} />
+                <Route path="/community/create-post" element={<CreatePostPage />} />
+                <Route path="/post/:id" element={<PostDetailsPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/saved" element={<SavedPage />} />
+              </Routes>
+            </Container>
             <BottomNavigationComponent />
           </Router>
         </ThemeProvider>
