@@ -117,7 +117,12 @@ const Home = () => {
             </Box>
           )}
         </Box>
-
+        <Section
+          title="Upcoming events"
+          link="/community"
+          events={upcomingEvents}
+          loading={loading}
+        />
         <Section
           title="Trails near me"
           link="/discover?sort=distance&order=asc"
@@ -138,12 +143,6 @@ const Home = () => {
           trails={topRatedTrails}
           loading={loading}
           userLocation={userLocation}
-        />
-        <Section
-          title="Upcoming events"
-          link="/community"
-          events={upcomingEvents}
-          loading={loading}
         />
       </Container>
       <Dialog open={locationDialogOpen} onClose={handleLocationDenied}>
@@ -201,7 +200,7 @@ const Section = ({ title, link, trails, events, loading, userLocation }) => (
                 </Grid>
               ))}
               {events && events.map((event) => (
-                <Grid item key={event.id}>
+                <Grid item key={event.id} xs={16} sm={8} md={6} lg={4}>
                   <CommunityPostCard post={event} />
                 </Grid>
               ))}

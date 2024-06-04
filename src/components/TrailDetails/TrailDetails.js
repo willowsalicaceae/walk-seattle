@@ -1,14 +1,16 @@
+// src/components/TrailDetails/TrailDetails.js
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CircularProgress, Button, Typography, Box, Container, Card, CardMedia, CardContent, Rating, Chip } from '@mui/material';
+import { Button, Typography, Box, Container, Card, CardMedia, CardContent, Rating, Chip } from '@mui/material';
 import { Map, GeoJson } from 'pigeon-maps';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import { calculateDistance } from '../../utils/distance';
-import getUserLocation from '../../utils/location';
+import { getUserLocation } from '../../utils/location';
 import FavoriteButton from '../FavoriteButton';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const TrailDetails = () => {
   const { id } = useParams();
@@ -21,22 +23,50 @@ const TrailDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       const cachedLocation = localStorage.getItem('userLocation');
-      let location;
+      const deniedLocation = localStorage.getItem('locationDenied');
 
       if (cachedLocation) {
-        location = JSON.parse(cachedLocation);
-      } else {
-        location = await getUserLocation();
-        localStorage.setItem('userLocation', JSON.stringify(location));
+        setUserLocation(JSON.parse(cachedLocation));
+      } else if (!deniedLocation) {
+        const location = await getUserLocation();
+        if (location) {
+          setUserLocation(location);
+          localStorage.setItem('userLocation', JSON.stringify(location));
+        } else {
+          localStorage.setItem('locationDenied', 'true');
+        }
       }
 
-      setUserLocation(location);
+      const fetchTrail = () => {
+        const trailRef = ref(db, `trails/${id}`);
+        onValue(trailRef, (snapshot) => {
+          const trailData = snapshot.val();
+          setTrail(trailData);
+          setLoading(false);
+        });
+      };
+
+      const fetchTrailTrack = () => {
+        const trackRef = ref(db, `trailTracks/${id}`);
+        onValue(trackRef, (snapshot) => {
+          const trackData = snapshot.val();
+          setGeoJsonData(trackData);
+
+          if (trackData && trackData.geometry) {
+            const bbox = trackData.geometry.bbox;
+            setBbox(bbox);
+          }
+        });
+      };
+
+      fetchTrail();
+      fetchTrailTrack();
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
-  const distance = userLocation && trail && trail.latitude && trail.longitude
+  const distance = userLocation && trail
     ? calculateDistance(
         userLocation.latitude,
         userLocation.longitude,
@@ -44,39 +74,6 @@ const TrailDetails = () => {
         trail.longitude
       ).toFixed(1)
     : null;
-
-  useEffect(() => {
-    const fetchTrail = () => {
-      const trailRef = ref(db, `trails/${id}`);
-      onValue(trailRef, (snapshot) => {
-        const trailData = snapshot.val();
-        setTrail(trailData);
-        setLoading(false);
-      });
-    };
-
-    const fetchTrailTrack = () => {
-      const trackRef = ref(db, `trailTracks/${id}`);
-      onValue(trackRef, (snapshot) => {
-        const trackData = snapshot.val();
-        setGeoJsonData(trackData);
-
-        if (trackData && trackData.geometry) {
-          console.log('Geometry:', trackData.geometry.bbox);
-          const bbox = trackData.geometry.bbox;
-          console.log('Bounding box:', bbox);
-          setBbox(bbox);
-        } else {
-          console.log('Track data does not have the expected structure');
-        }
-      });
-    };
-
-    console.log('Fetching trail data for ID:', id);
-    fetchTrail();
-    console.log('Fetching trail track data for ID:', id);
-    fetchTrailTrack();
-  }, [id]);
 
   const openGoogleMaps = () => {
     if (trail && trail.latitude && trail.longitude) {
@@ -103,21 +100,21 @@ const TrailDetails = () => {
           alt={trail.name}
         />
         <CardContent>
-        <Typography variant="h4">{trail.name}</Typography>
+          <Typography variant="h4">{trail.name}</Typography>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
             <Typography variant="body1" color="text.secondary">
               <DirectionsWalkIcon sx={{ fontSize: 14, mr: 0.5 }}/>
               {trail.length} miles long
             </Typography>
             {distance && (
-                <Typography variant="body1" color="text.secondary">
-                  <DirectionsIcon sx={{ fontSize: 14, mr: 0.5 }}/>
-                  {distance} miles away
-                  <Button variant="text" color="primary" onClick={openGoogleMaps} sx={{ ml: 1}}>
-                    Get Directions
-                  </Button>
-                </Typography>
+              <Typography variant="body1" color="text.secondary">
+                <DirectionsIcon sx={{ fontSize: 14, mr: 0.5 }}/>
+                {distance} miles away
+              </Typography>
             )}
+            <Button variant="text" color="primary" onClick={openGoogleMaps} sx={{ ml: 1 }}>
+              Get Directions
+            </Button>
           </Box>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box display="flex">
@@ -132,7 +129,7 @@ const TrailDetails = () => {
               size="small"
             />
           </Box>
-          <FavoriteButton trailId={trail.id} />
+          <FavoriteButton trailId={id} />
           <Typography variant="h6" gutterBottom>
             Description
           </Typography>
@@ -171,8 +168,6 @@ const TrailDetails = () => {
           </Box>
         </CardContent>
       </Card>
-
-
     </Container>
   );
 };
