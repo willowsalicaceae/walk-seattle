@@ -5,16 +5,19 @@ import { db } from '../firebase/firebase';
 import TrailCard from '../components/TrailDiscovery/TrailCard';
 import CommunityPostCard from '../components/Community/CommunityPostCard';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const SavedPage = () => {
-  const { currentUser } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [rsvpEvents, setRsvpEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!currentUser) {
-      return; // Exit early if there's no current user
+      navigate('/signin', { state: { alert: 'Please log in to view your saved items.' } });
+      return;
     }
 
     const fetchData = async () => {
@@ -61,7 +64,7 @@ const SavedPage = () => {
     };
 
     fetchData();
-  }, [currentUser]);
+  }, [currentUser, navigate]);
 
   if (loading) {
     return (

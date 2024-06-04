@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Container, Typography, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -23,6 +24,7 @@ const SignIn = () => {
 
   return (
     <>
+      {location.state?.alert && <Alert severity="info">{location.state.alert}</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
       <Container maxWidth="xs">
         <Typography variant="h4" align="center" gutterBottom>

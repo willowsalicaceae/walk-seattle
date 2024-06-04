@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Typography, Box, Container, Card, CardMedia, CardContent, Rating, Chip } from '@mui/material';
+import { CircularProgress, Button, Typography, Box, Container, Card, CardMedia, CardContent, Rating, Chip } from '@mui/material';
 import { Map, GeoJson } from 'pigeon-maps';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase/firebase';
@@ -8,6 +8,7 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import { calculateDistance } from '../../utils/distance';
 import getUserLocation from '../../utils/location';
+import FavoriteButton from '../FavoriteButton';
 
 const TrailDetails = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const TrailDetails = () => {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [bbox, setBbox] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,8 +50,8 @@ const TrailDetails = () => {
       const trailRef = ref(db, `trails/${id}`);
       onValue(trailRef, (snapshot) => {
         const trailData = snapshot.val();
-        console.log('Trail data:', trailData);
         setTrail(trailData);
+        setLoading(false);
       });
     };
 
@@ -57,7 +59,6 @@ const TrailDetails = () => {
       const trackRef = ref(db, `trailTracks/${id}`);
       onValue(trackRef, (snapshot) => {
         const trackData = snapshot.val();
-        console.log('Track data:', trackData);
         setGeoJsonData(trackData);
 
         if (trackData && trackData.geometry) {
@@ -77,19 +78,20 @@ const TrailDetails = () => {
     fetchTrailTrack();
   }, [id]);
 
-  console.log('Trail:', trail);
-  console.log('Bounding box:', bbox);
-
-  if (!trail || !bbox) {
-    return <div>Loading...</div>;
-  }
-
   const openGoogleMaps = () => {
     if (trail && trail.latitude && trail.longitude) {
       const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${trail.latitude},${trail.longitude}`;
       window.open(mapsUrl, '_blank');
     }
   };
+
+  if (loading) {
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -130,6 +132,7 @@ const TrailDetails = () => {
               size="small"
             />
           </Box>
+          <FavoriteButton trailId={trail.id} />
           <Typography variant="h6" gutterBottom>
             Description
           </Typography>

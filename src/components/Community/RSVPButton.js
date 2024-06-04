@@ -1,12 +1,23 @@
+// src/components/Community/RSVPButton.js
 import React from 'react';
 import { ref, set, remove } from 'firebase/database';
 import { db, auth } from '../../firebase/firebase';
 import { Button } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const RSVPButton = ({ postId, isRSVP, onRSVPChange }) => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
   const handleRSVP = () => {
+    if (!currentUser) {
+      navigate('/signin', { state: { alert: 'Please log in to RSVP to events.' } });
+      return;
+    }
+
     const user = auth.currentUser;
     if (user) {
       const userRsvpRef = ref(db, `users/${user.uid}/rsvps/${postId}`);

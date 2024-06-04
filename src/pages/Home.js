@@ -176,7 +176,7 @@ const Home = () => {
 const Section = ({ title, link, trails, events, loading, userLocation }) => (
   <Box mb={4}>
     <Card>
-      <CardActionArea component={RouterLink} to={`${link}&sort=${title === 'Trails near me' ? 'distance' : title === 'Popular trails' ? 'numReviews' : 'rating'}&order=${title === 'Trails near me' ? 'asc' : 'desc'}`}>
+      <CardActionArea component={RouterLink} to={link}>
         <CardContent>
           <Typography variant="h5" component="div">
             {title}

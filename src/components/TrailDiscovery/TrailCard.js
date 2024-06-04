@@ -28,6 +28,8 @@ const TrailCard = ({ trail, userLocation }) => {
     hard: 'warning',
   };
 
+  const difficulty = trail.difficulty ? trail.difficulty.toLowerCase() : 'unknown';
+
   const distance = userLocation && trail && trail.latitude && trail.longitude
     ? calculateDistance(
         userLocation.latitude,
@@ -83,8 +85,8 @@ const TrailCard = ({ trail, userLocation }) => {
                 ({trail.numReviews} reviews)
               </Typography>
               <Chip
-                label={trail.difficulty}
-                color={difficultyColor[trail.difficulty.toLowerCase()]}
+                label={difficulty}
+                color={difficultyColor[difficulty] || 'default'}
                 size="small"
               />
             </Box>

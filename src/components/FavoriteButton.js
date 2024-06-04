@@ -4,40 +4,36 @@ import { db, auth } from '../firebase/firebase';
 import { IconButton } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const FavoriteButton = ({ trailId }) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      const favoriteRef = ref(db, `users/${user.uid}/favorites/${trailId}`);
+    if (currentUser) {
+      const favoriteRef = ref(db, `users/${currentUser.uid}/favorites/${trailId}`);
       onValue(favoriteRef, (snapshot) => {
         setIsFavorite(snapshot.exists());
       });
     }
-  }, [trailId]);
+  }, [trailId, currentUser]);
 
   const handleFavorite = () => {
+    if (!currentUser) {
+      navigate('/signin', { state: { alert: 'Please log in to favorite trails.' } });
+      return;
+    }
+
     const user = auth.currentUser;
     if (user) {
       const favoriteRef = ref(db, `users/${user.uid}/favorites/${trailId}`);
       if (isFavorite) {
-        remove(favoriteRef)
-          .then(() => {
-            console.log('Favorite removed from the database');
-          })
-          .catch((error) => {
-            console.error('Error removing favorite:', error);
-          });
+        remove(favoriteRef);
       } else {
-        set(favoriteRef, true)
-          .then(() => {
-            console.log('Favorite added to the database');
-          })
-          .catch((error) => {
-            console.error('Error adding favorite:', error);
-          });
+        set(favoriteRef, true);
       }
     }
   };
