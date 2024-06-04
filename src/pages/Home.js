@@ -200,7 +200,7 @@ const Section = ({ title, link, trails, events, loading, userLocation }) => (
                 </Grid>
               ))}
               {events && events.map((event) => (
-                <Grid item key={event.id} xs={16} sm={8} md={6} lg={4}>
+                <Grid item key={event.id} sx={{ minWidth: 300 }}>
                   <CommunityPostCard post={event} />
                 </Grid>
               ))}

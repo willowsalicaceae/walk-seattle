@@ -75,7 +75,18 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
             <CardMedia component="img" height="140" image={trail.image} alt={trail.name} />
           )}
           <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography
+              gutterBottom
+              variant="h5"
+              component="div"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: '2',
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
               {post.title}
             </Typography>
             <Box display="flex" justifyContent="space-between">
@@ -97,7 +108,17 @@ const CommunityPostCard = ({ post, onDeletePost }) => {
                 </Typography>
               )}
             </Box>
-            <Typography variant="body2" color="text.secondary" mt={1}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: '3',
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
               {post.description}
             </Typography>
           </CardContent>

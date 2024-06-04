@@ -91,84 +91,82 @@ const TrailDetails = () => {
   }
 
   return (
-    <Container>
-      <Card>
-        <CardMedia
-          component="img"
-          height="300"
-          image={trail.image}
-          alt={trail.name}
-        />
-        <CardContent>
-          <Typography variant="h4">{trail.name}</Typography>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-            <Typography variant="body1" color="text.secondary">
-              <DirectionsWalkIcon sx={{ fontSize: 14, mr: 0.5 }}/>
-              {trail.length} miles long
-            </Typography>
-            {distance && (
-              <Typography variant="body1" color="text.secondary">
-                <DirectionsIcon sx={{ fontSize: 14, mr: 0.5 }}/>
-                {distance} miles away
-              </Typography>
-            )}
-            <Button variant="text" color="primary" onClick={openGoogleMaps} sx={{ ml: 1 }}>
-              Get Directions
-            </Button>
-          </Box>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box display="flex">
-              <Rating value={trail.rating} precision={0.5} readOnly />
-              <Typography variant="body2" color="text.secondary" ml={1}>
-                ({trail.numReviews} reviews)
-              </Typography>
-            </Box>
-            <Chip
-              label={trail.difficulty}
-              color={getDifficultyColor(trail.difficulty)}
-              size="small"
-            />
-          </Box>
-          <FavoriteButton trailId={id} />
-          <Typography variant="h6" gutterBottom>
-            Description
+    <Card>
+      <CardMedia
+        component="img"
+        height="300"
+        image={trail.image}
+        alt={trail.name}
+      />
+      <CardContent>
+        <Typography variant="h4">{trail.name}</Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="body1" color="text.secondary">
+            <DirectionsWalkIcon sx={{ fontSize: 14, mr: 0.5 }}/>
+            {trail.length} miles long
           </Typography>
-          <Typography variant="body1">{trail.description}</Typography>
-          <Box mt={4}>
-            {bbox && geoJsonData && (
-              <Map
-                center={[(bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2]}
-                zoom={15}
-                width="100%"
-                height={400}
-              >
-                {geoJsonData && (
-                  <GeoJson
-                    data={{
-                      type: 'FeatureCollection',
-                      features: [
-                        {
-                          type: 'Feature',
-                          geometry: geoJsonData.geometry,
-                          properties: geoJsonData.properties,
-                        },
-                      ],
-                    }}
-                    styleCallback={(feature, hover) => ({
-                      stroke: 'green',
-                      strokeWidth: 5,
-                      fill: 'none',
-                      r: feature.geometry.type === 'Point' ? 8 : undefined,
-                      fillOpacity: feature.geometry.type === 'Point' ? 1 : undefined,
-                    })}
-                  />
-                )}
-              </Map>
-            )}
+          {distance && (
+            <Typography variant="body1" color="text.secondary">
+              <DirectionsIcon sx={{ fontSize: 14, mr: 0.5 }}/>
+              {distance} miles away
+            </Typography>
+          )}
+          <Button variant="text" color="primary" onClick={openGoogleMaps} sx={{ ml: 1 }}>
+            Get Directions
+          </Button>
+        </Box>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex">
+            <Rating value={trail.rating} precision={0.5} readOnly />
+            <Typography variant="body2" color="text.secondary" ml={1}>
+              ({trail.numReviews} reviews)
+            </Typography>
           </Box>
-        </CardContent>
-      </Card>
-    </Container>
+          <Chip
+            label={trail.difficulty}
+            color={getDifficultyColor(trail.difficulty)}
+            size="small"
+          />
+        </Box>
+        <FavoriteButton trailId={id} />
+        <Typography variant="h6" gutterBottom>
+          Description
+        </Typography>
+        <Typography variant="body1">{trail.description}</Typography>
+        <Box mt={4}>
+          {bbox && geoJsonData && (
+            <Map
+              center={[(bbox[1] + bbox[3]) / 2, (bbox[0] + bbox[2]) / 2]}
+              zoom={15}
+              width="100%"
+              height={400}
+            >
+              {geoJsonData && (
+                <GeoJson
+                  data={{
+                    type: 'FeatureCollection',
+                    features: [
+                      {
+                        type: 'Feature',
+                        geometry: geoJsonData.geometry,
+                        properties: geoJsonData.properties,
+                      },
+                    ],
+                  }}
+                  styleCallback={(feature, hover) => ({
+                    stroke: 'green',
+                    strokeWidth: 5,
+                    fill: 'none',
+                    r: feature.geometry.type === 'Point' ? 8 : undefined,
+                    fillOpacity: feature.geometry.type === 'Point' ? 1 : undefined,
+                  })}
+                />
+              )}
+            </Map>
+          )}
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
