@@ -8,7 +8,8 @@ import {
   Rating,
   Chip,
   Box,
-  CardActions
+  CardActions,
+  Skeleton
 } from '@mui/material';
 import FavoriteButton from '../FavoriteButton';
 import { Link as RouterLink } from 'react-router-dom';
@@ -16,12 +17,19 @@ import { styled } from '@mui/material/styles';
 import { calculateDistance } from '../../utils/distance';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import DirectionsIcon from '@mui/icons-material/Directions';
+import { useState } from 'react';
 
 const Link = styled(RouterLink)({
   textDecoration: 'none',
 });
 
 const TrailCard = ({ trail, userLocation }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   const difficultyColor = {
     easy: 'success',
     moderate: 'info',
@@ -45,11 +53,16 @@ const TrailCard = ({ trail, userLocation }) => {
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <CardActionArea component={Link} to={`/trail/${trail.id}`} sx={{ flexGrow: 1 }}>
+        {!imageLoaded && (
+          <Skeleton variant="rectangular" width="100%" height={200} />
+        )}
         <CardMedia
           component="img"
           height="200"
           image={trail.image}
           alt={trail.name}
+          onLoad={handleImageLoad}
+          style={{ display: imageLoaded ? 'block' : 'none' }}
         />
         <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <Typography
