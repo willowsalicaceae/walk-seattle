@@ -1,8 +1,10 @@
 # WalkSeattle
 
+[![WalkSeattle logo](/src/img/logo.png)](https://walkseattle.vercel.app/)
+
 [Click here](https://walkseattle.vercel.app/) to view the live site!
 
-## Please note:
+## Please note
 
 This was created as a class project for INFO 442 - Cooperative Software Development at the University of Washington Information School.
 
